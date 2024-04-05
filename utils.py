@@ -23,12 +23,15 @@ def download_file_from_url(url, local_file_path):
         print(f"Failed to download file: {response.status_code}")
         return False
 
-def download_hf(REPO_ID, FILENAME, LOCAL_PATH):
-    # Example usage
+def download_hf(REPO_ID, FILENAME, LOCAL_PATH,overwrite):
     URL = f"https://huggingface.co/{REPO_ID}/resolve/main/{FILENAME}"
     LOCAL_FILE_PATH =  os.path.join(LOCAL_PATH, FILENAME)
 
-    if download_file_from_url(URL, LOCAL_FILE_PATH):
-        print("File downloaded successfully.")
+    # Check if the file already exists
+    if (overwrite or not os.path.exists(LOCAL_FILE_PATH)):
+        if download_file_from_url(URL, LOCAL_FILE_PATH):
+            print("File downloaded successfully.")
+        else:
+            print("Failed to download the file.")
     else:
-        print("Failed to download the file.")
+        print("File already exists, not overwriting it.")

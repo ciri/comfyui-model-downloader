@@ -11,7 +11,9 @@ class HFDownloader:
                 "filename": ("STRING", {"multiline": False, "default": "sdxl_lightning_2step_lora.safetensors"}),
                 "save_dir": ("STRING", {"multiline": False, "default": get_base_dir()}),
             },
-            #"optional" : {}
+            "optional" : {
+                "overwrite": ("BOOLEAN", { "default": False}),
+            }
         }
         
     RETURN_TYPES = ()
@@ -21,10 +23,10 @@ class HFDownloader:
     CATEGORY     = "loaders"
 
     # inputs match input types
-    def download(self, repo_id, filename,save_dir):
+    def download(self, repo_id, filename,save_dir, overwrite):
         print("Dowloading")
         print(f"\t{repo_id}")
         print(f"\t{filename}")
         print(f"\t{save_dir}")
-        download_hf(repo_id, filename,save_dir)
+        download_hf(repo_id, filename,save_dir,overwrite)
         return {}
