@@ -1,6 +1,5 @@
-import install
+#import install
 from .utils import download_hf, get_base_dir
-import time
 
 class HFDownloader:     
 
