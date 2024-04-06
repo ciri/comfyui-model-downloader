@@ -4,11 +4,12 @@ from .nodes.cai_download import CivitAIDownloader
 
 NODE_CLASS_MAPPINGS = { 
     "HF Downloader" : HFDownloader,
-    "CivitAI Downloader":CivitAIDownloader
+    "CivitAI Downloader":CivitAIDownloader,
+    "Model Downloader": ModelFinder
 }
 NODE_DISPLAY_NAME_MAPPINGS = { 
     "HF Downloader" : "HF Downloader", 
-    "CivitAI Downloader" : "CivitAI Downloader" 
+    "CivitAI Downloader" : "CivitAI Downloader",
 }
 
 
