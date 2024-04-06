@@ -26,5 +26,11 @@ To use the model downloader within your ComfyUI environment:
 4. Execute the node to start the download process.
 5. To avoid repeated downloading, make sure to bypass the node after you've downloaded a model.
 
+
+## Screenshot
+
+![Alt text](doc/hf-downloader.png?raw=true "HF")
+![Alt text](doc/civitai-downloader.png?raw=true "CivitAI")
+
 ## Support
 For support, questions, or contributions, please open an issue on the GitHub repository page. Contributions are welcome!
