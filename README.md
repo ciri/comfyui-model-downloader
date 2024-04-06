@@ -3,6 +3,11 @@
 ## Introduction
 This project provides an experimental model downloader node for ComfyUI, designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
 
+## Screenshot
+
+![Alt text](doc/hf-downloader.png?raw=true "HF")
+![Alt text](doc/civitai-downloader.png?raw=true "CivitAI")
+
 ## Features
 - **Easy Model Downloading**: Simplify the process of downloading models directly within the ComfyUI environment.
 - **Repositories**: Currently only supports hugging face and CivitAI.
@@ -27,10 +32,6 @@ To use the model downloader within your ComfyUI environment:
 5. To avoid repeated downloading, make sure to bypass the node after you've downloaded a model.
 
 
-## Screenshot
-
-![Alt text](doc/hf-downloader.png?raw=true "HF")
-![Alt text](doc/civitai-downloader.png?raw=true "CivitAI")
 
 ## Support
 For support, questions, or contributions, please open an issue on the GitHub repository page. Contributions are welcome!
