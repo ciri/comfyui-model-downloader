@@ -9,7 +9,7 @@ class CivitAIDownloader:
         return {
             "required": {       
                 "model_id":  ("STRING", {"multiline": False, "default": "360292"}),
-                "token_id": ("STRING", {"multiline": False, "default": "bb2a86388b3e178eacfa9d44f76a915d"}),
+                "token_id": ("STRING", {"multiline": False, "default": "token_here"}),
                 "save_dir": (get_model_dirs(),),
             },
             "optional" : {
