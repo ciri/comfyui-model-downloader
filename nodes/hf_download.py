@@ -1,5 +1,5 @@
 #import install
-from .utils import download_hf, get_base_dir
+from .utils import download_hf, get_model_dirs
 
 class HFDownloader:     
 
@@ -9,10 +9,10 @@ class HFDownloader:
             "required": {       
                 "repo_id":  ("STRING", {"multiline": False, "default": "ByteDance/SDXL-Lightning"}),
                 "filename": ("STRING", {"multiline": False, "default": "sdxl_lightning_2step_lora.safetensors"}),
-                "save_dir": ("STRING", {"multiline": False, "default": get_base_dir()}),
+                "save_dir": (get_model_dirs(),),
             },
             "optional" : {
-                "overwrite": ("BOOLEAN", { "default": False}),
+                "overwrite": ("BOOLEAN", { "default": False})
             }
         }
         
@@ -23,7 +23,7 @@ class HFDownloader:
     CATEGORY     = "loaders"
 
     # inputs match input types
-    def download(self, repo_id, filename,save_dir, overwrite):
+    def download(self, repo_id, filename,save_dir, overwrite):  
         print("Dowloading")
         print(f"\t{repo_id}")
         print(f"\t{filename}")

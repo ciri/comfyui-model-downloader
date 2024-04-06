@@ -1,5 +1,5 @@
 
-from .hf_download import HFDownloader
+from .nodes.hf_download import HFDownloader
 
 NODE_CLASS_MAPPINGS = { 
     "HF Downloader" : HFDownloader 

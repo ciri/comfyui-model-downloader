@@ -1,15 +1,20 @@
 import requests
 import os
 
+    
 def get_base_dir():
     # Get the directory of the current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Navigate two levels up from the current directory
-    base_dir = os.path.dirname(os.path.dirname(current_dir))
+    # Navigate 3 levels up from the current directory
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
     # Append the 'models' directory to the path
     models_dir = os.path.join(base_dir, 'models')
     return models_dir
 
+def get_model_dirs():
+    models_dir = get_base_dir()
+    model_dirs = [d for d in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, d))]
+    return model_dirs
 
 def download_file_from_url(url, local_file_path):
     """Download a file from a URL to a local file path."""
@@ -25,7 +30,7 @@ def download_file_from_url(url, local_file_path):
 
 def download_hf(REPO_ID, FILENAME, LOCAL_PATH,overwrite):
     URL = f"https://huggingface.co/{REPO_ID}/resolve/main/{FILENAME}"
-    LOCAL_FILE_PATH =  os.path.join(LOCAL_PATH, FILENAME)
+    LOCAL_FILE_PATH =  os.path.join(get_base_dir(), LOCAL_PATH, FILENAME)
 
     # Check if the file already exists
     if (overwrite or not os.path.exists(LOCAL_FILE_PATH)):
