@@ -1,7 +1,7 @@
 # Model Downloader for ComfyUI
 
 ## Introduction
-This project provides an experimental model downloader node for ComfyUI, designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
+This project provides an experimental model downloader node for [ComfyUI](https://github.com/ltdrdata/ComfyUI-Manager), designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
 
 ## Screenshot
 
