@@ -1,30 +1,32 @@
-import requests
+from .utils import download_with_feedback
 import os
-
 from .utils import get_base_dir
+from tqdm import tqdm
+import requests
 
-def download_file_from_url(url, local_file_path):
-    """Download a file from a URL to a local file path."""
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        os.makedirs(os.path.dirname(local_file_path), exist_ok=True)
-        with open(local_file_path, 'wb') as f:
-            f.write(response.content)
-        return True
-    else:
-        print(f"Failed to download file: {response.status_code}")
-        return False
 
-def download_hf(REPO_ID, FILENAME, LOCAL_PATH,overwrite):
-    URL = f"https://huggingface.co/{REPO_ID}/resolve/main/{FILENAME}"
-    LOCAL_FILE_PATH =  os.path.join(get_base_dir(), LOCAL_PATH, FILENAME)
+def download_hf(repo_id, filename, save_path, overwrite=False, progress_callback=None):
+    URL = f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
+    
+    # Get file size first
+    response = requests.get(URL, stream=True)
+    total_size = int(response.headers.get('content-length', 0))
+    
+    # Create the full file path
+    full_file_path = os.path.join(save_path, filename)
+    
+    chunk_size = 1024 * 1024  # 1MB chunks
+    downloaded = 0
 
-    # Check if the file already exists
-    if (overwrite or not os.path.exists(LOCAL_FILE_PATH)):
-        if download_file_from_url(URL, LOCAL_FILE_PATH):
-            print("File downloaded successfully.")
-        else:
-            print("Failed to download the file.")
-    else:
-        print("File already exists, not overwriting it.")
-            
+    with open(full_file_path, 'wb') as file:
+        with tqdm(total=total_size, unit='iB', unit_scale=True, desc=filename, leave=True) as pbar:
+            for data in response.iter_content(chunk_size=chunk_size):
+                size = file.write(data)
+                downloaded += size
+                pbar.update(size)
+                
+                if progress_callback and total_size > 0:
+                    progress = (downloaded / total_size) * 100.0
+                    progress_callback.set_progress(progress)
+
+    return True

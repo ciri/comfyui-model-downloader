@@ -1,7 +1,14 @@
 # Model Downloader for ComfyUI
 
+<div align="center">
+    <picture>
+        <source media="(prefers-color-scheme: light)" srcset="https://github.com/ciri/comfyui-model-downloader/blob/main/assets/logo.svg?raw=true">
+    </picture>
+</div>
+
+
 ## Introduction
-This project provides an experimental model downloader node for [ComfyUI](https://github.com/comfyanonymous/ComfyUI), designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
+This project provides an experimental model downloader node for ComfyUI, designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
 
 ## Screenshot
 
@@ -15,9 +22,7 @@ This project provides an experimental model downloader node for [ComfyUI](https:
 
 ## Installation
 
-If you have [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager), you can just search for it as we're part of their repository.
-
-Alternatively, you can clone the repository or download the extension directly into your ComfyUI project's `custom_nodes` folder:
+Clone the repository or download the extension directly into your ComfyUI project's `custom_nodes` folder:
 
 ```
 git clone https://github.com/ciri/model-downloader-comfyui.git
@@ -32,8 +37,6 @@ To use the model downloader within your ComfyUI environment:
 3. Configure the node properties with the URL or identifier of the model you wish to download and specify the destination path.
 4. Execute the node to start the download process.
 5. To avoid repeated downloading, make sure to bypass the node after you've downloaded a model.
-
-
 
 ## Support
 For support, questions, or contributions, please open an issue on the GitHub repository page. Contributions are welcome!

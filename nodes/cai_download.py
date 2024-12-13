@@ -1,38 +1,37 @@
-#import install
-from .cai_utils import download_cai
-from .hf_utils import download_hf
-from .utils import get_model_dirs
+from .base_downloader import BaseModelDownloader, get_model_dirs
+from .download_utils import DownloadManager
 
-class CivitAIDownloader:     
+class CivitAIDownloader(BaseModelDownloader):     
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {       
+                "model_id": ("STRING", {"multiline": False, "default": "360292"}),
+                "token_id": ("STRING", {"multiline": False, "default": "token_here"}),
                 "save_dir": (get_model_dirs(),),
             },
-            "optional" : {
-                "ignore": ("BOOLEAN", { "default": False}),
-                "model_id":  ("STRING", {"multiline": False, "default": "360292"}),
-                "token_id": ("STRING", {"multiline": False, "default": ""}),
-                "full_url": ("STRING", {"multiline": False, "default": ""})
+            "optional": {
+                "ignore": ("BOOLEAN", {"default": False})
+            },
+            "hidden": {
+                "node_id": "UNIQUE_ID"
             }
         }
         
-    RETURN_TYPES = ()
-    #RETURN_NAMES = ()
-    FUNCTION     = "download"
-    OUTPUT_NODE  = True
-    CATEGORY     = "loaders"
+    FUNCTION = "download"
 
-    # inputs match input types
-    def download(self, model_id, token_id, save_dir, ignore, full_url):  
-        print("Dowloading")
-        print(f"\tModel: {model_id}")
-        print(f"\tToken: {token_id}")
-        print(f"\tFull URL: {full_url}")
-        print(f"\tSaving to: {save_dir}")
+    def download(self, model_id, token_id, save_dir, node_id, ignore=False):
+        self.node_id = node_id
+        if ignore:
+            return {}
+            
+        save_path = self.prepare_download_path(save_dir)
+        url = f'https://civitai.com/api/download/models/{model_id}'
         
-        # https://civitai.com/models/321320/wildcardx-xl-lightning
-        if(not ignore):
-            download_cai(model_id, token_id, save_dir, full_url)
-        return {}
+        return self.handle_download(
+            DownloadManager.download_with_progress,
+            url=url,
+            save_path=save_path,
+            progress_callback=self,
+            params={'token': token_id}
+        )
