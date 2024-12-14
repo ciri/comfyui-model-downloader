@@ -1,3 +1,5 @@
+
+
 from .base_downloader import BaseModelDownloader, get_model_dirs
 from .download_utils import DownloadManager
 
@@ -21,6 +23,11 @@ class HFDownloader(BaseModelDownloader):
     FUNCTION = "download"
 
     def download(self, repo_id, filename, local_path, node_id, overwrite=False):
+        if not repo_id or not filename:
+            print(f"Missing required values: repo_id='{repo_id}', filename='{filename}'")
+            return {}
+        
+        print(f'downloading model {repo_id} {filename} {local_path} {node_id} {overwrite}')
         self.node_id = node_id
         save_path = self.prepare_download_path(local_path)
         url = f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
@@ -55,6 +62,7 @@ class HFAuthDownloader(HFDownloader):  # Inherit from HFDownloader to share meth
         }
 
     def download_model(self, repo_id, filename, local_path, hf_token, overwrite):
+        print(f'downloading model {repo_id} {filename} {local_path} {hf_token} {overwrite}')
         try:
             # Always use token for auth version
             import huggingface_hub
