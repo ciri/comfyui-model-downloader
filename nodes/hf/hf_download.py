@@ -1,5 +1,5 @@
-from .base_downloader import BaseModelDownloader, get_model_dirs
-from .download_utils import DownloadManager
+from ..base_downloader import BaseModelDownloader, get_model_dirs
+from ..download_utils import DownloadManager
 
 class HFDownloader(BaseModelDownloader):     
     @classmethod
@@ -9,9 +9,11 @@ class HFDownloader(BaseModelDownloader):
                 "repo_id": ("STRING", {"multiline": False, "default": "runwayml/stable-diffusion-v1-5"}),
                 "filename": ("STRING", {"multiline": False, "default": "v1-5-pruned-emaonly.ckpt"}),
                 "local_path": (get_model_dirs(),),
+                
             },
             "optional": {
                 "overwrite": ("BOOLEAN", {"default": True}),
+                "local_path_override": ("STRING", {"default": ""}),
             },
             "hidden": {
                 "node_id": "UNIQUE_ID"
@@ -20,14 +22,16 @@ class HFDownloader(BaseModelDownloader):
         
     FUNCTION = "download"
 
-    def download(self, repo_id, filename, local_path, node_id, overwrite=False):
+    def download(self, repo_id, filename, local_path, node_id, overwrite=False, local_path_override=""):
         if not repo_id or not filename:
             print(f"Missing required values: repo_id='{repo_id}', filename='{filename}'")
             return {}
         
-        print(f'downloading model {repo_id} {filename} {local_path} {node_id} {overwrite}')
+        final_path = local_path_override if local_path_override else local_path
+        
+        print(f'downloading model {repo_id} {filename} {final_path} {node_id} {overwrite}')
         self.node_id = node_id
-        save_path = self.prepare_download_path(local_path, filename)
+        save_path = self.prepare_download_path(final_path, filename)
         url = f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
         
         return self.handle_download(

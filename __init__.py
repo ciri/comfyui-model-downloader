@@ -1,6 +1,6 @@
-from .nodes.hf_download import HFDownloader
-from .nodes.auto_download import AutoModelDownloader
-from .nodes.cai_download import CivitAIDownloader
+from .nodes.hf.hf_download import HFDownloader
+from .nodes.auto.downloader import AutoModelDownloader
+from .nodes.cai.cai_download import CivitAIDownloader
 import os
 
 # Node mappings

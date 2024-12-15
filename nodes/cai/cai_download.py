@@ -1,5 +1,5 @@
-from .base_downloader import BaseModelDownloader, get_model_dirs
-from .download_utils import DownloadManager
+from ..base_downloader import BaseModelDownloader, get_model_dirs
+from ..download_utils import DownloadManager
 
 class CivitAIDownloader(BaseModelDownloader):     
     @classmethod

@@ -1,6 +1,4 @@
-from .utils import download_with_feedback
 import os
-from .utils import get_base_dir
 from tqdm import tqdm
 import requests
 
