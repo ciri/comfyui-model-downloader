@@ -1,7 +1,14 @@
 import aiohttp
 import re
 
+_model_cache = {}
+
 async def search_for_model(filename):
+    # Check cache first
+    cache_key = filename.lower()
+    if cache_key in _model_cache:
+        return _model_cache[cache_key]
+
     def extract_model_components(filename):
         name_without_extension = re.sub(r'\.[^/.]+$', '', filename)
         parts = re.split(r'[-_]', name_without_extension)
@@ -24,10 +31,8 @@ async def search_for_model(filename):
         core_name = "_".join(core_name) if core_name else None
         return {"core_name": core_name, "version": version, "tags": tags}
     
-    print(f"Searching for model: {filename}")
     components = extract_model_components(filename)
-    print(f"Extracted components: {components}")
-
+    
     base_url = "https://huggingface.co/api/models"
     search_queries = []
 
@@ -49,5 +54,9 @@ async def search_for_model(filename):
                                 None
                             )
                             if match:
-                                return {"repo_id": repo["modelId"], "filename": filename}
+                                result = {"repo_id": repo["modelId"], "filename": filename}
+                                # Cache the result
+                                _model_cache[cache_key] = result
+                                return result
+    _model_cache[cache_key] = None
     return None

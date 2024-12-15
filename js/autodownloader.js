@@ -48,7 +48,6 @@ app.registerExtension({
     },
     async beforeRegisterNodeDef(nodeType, nodeData, app)  {
         if (nodeType.comfyClass == "Auto Model Downloader") {
-            console.log("[beforeRegisterNodeDef] Node type:", nodeType, nodeData);
             // Add missing_models to the properties that should be serialized
             const originalGetExtraProperties = nodeType.prototype.getExtraProperties;
             nodeType.prototype.getExtraProperties = function() {
@@ -60,7 +59,6 @@ app.registerExtension({
             // Extend the node's prototype to add custom serialization
             const originalSerialize = nodeType.prototype.serialize;
             nodeType.prototype.serialize = function() {
-                console.log("[serialize] Serializing node:", this);
                 const data = originalSerialize ? originalSerialize.call(this) : {};
                 if (this.missing_models) {
                     data.missing_models = this.missing_models;
@@ -73,7 +71,6 @@ app.registerExtension({
 
             // Restore method using configure
             nodeType.prototype.configure = function(data) {
-                console.log("[configure] Configuring node:", this, data);
                 if (data.missing_models) {
                     this.missing_models = data.missing_models;
                 }

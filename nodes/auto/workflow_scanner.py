@@ -3,12 +3,11 @@ from .constants import EXTENSION_MAP
 import os
 
 async def scan_workflow(prompt):
-    print(f"Scanning workflow with prompt: {prompt}")
+    print(f"[Scannner] Scanning workflow.")
     if not prompt:
         print("No workflow found")
         return []
 
-    print("\n=== Starting Workflow Scan ===")
     missing_models = []
 
     for node_id, node in prompt.items():
@@ -31,14 +30,12 @@ async def scan_workflow(prompt):
                 file_extension = os.path.splitext(filename)[1].lower()
 
                 # Skip inputs without a valid extension
-                if not file_extension:
-                    print(f"[DEBUG] Skipping input without extension: {filename}")
+                if not file_extension:                    
                     continue
 
                 # Map to a valid model directory - THIS IS THE DIRECTORY
                 local_path = EXTENSION_MAP.get(file_extension)
                 if not local_path:
-                    print(f"[DEBUG] Unrecognized file extension: {file_extension} for {filename}")
                     continue
 
             missing_models.append({
@@ -46,7 +43,7 @@ async def scan_workflow(prompt):
                 "repo_id": None,
                 "local_path": local_path  # JUST the directory
             })
-            print(f"[DEBUG] Missing model: {filename}, Directory: {local_path}")
+            print(f"[Scanner] Missing model: {filename}, Directory: {local_path}")
 
-    print(f"Found {len(missing_models)} missing models")
+    print(f"[Scanner] {len(missing_models)} missing models")
     return missing_models
