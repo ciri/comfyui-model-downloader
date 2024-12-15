@@ -37,7 +37,7 @@ Parameters:
 
 ## Auto Model Finder (Experimental)
 
-![Auto](assets/auto-downloader.jpg?raw=true)
+![Auto](assets/auto-downloader.png?raw=true)
 
 Automatically searches for known files (e.g., .safetensors, .ckpt, etc) files in your canvas and looks for repositories containing them on Hugging Face. Ideally, you should use this together with the HF Downloader node to automatically download any missing models.
 
