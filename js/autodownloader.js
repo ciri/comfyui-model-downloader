@@ -45,5 +45,60 @@ app.registerExtension({
                 }
             }
         };
+    },
+    async beforeRegisterNodeDef(nodeType, nodeData, app)  {
+        if (nodeType.comfyClass == "Auto Model Downloader") {
+            console.log("[beforeRegisterNodeDef] Node type:", nodeType, nodeData);
+            // Add missing_models to the properties that should be serialized
+            const originalGetExtraProperties = nodeType.prototype.getExtraProperties;
+            nodeType.prototype.getExtraProperties = function() {
+                const props = originalGetExtraProperties ? originalGetExtraProperties.call(this) : [];
+                props.push("missing_models");
+                return props;
+            };
+
+            // Extend the node's prototype to add custom serialization
+            const originalSerialize = nodeType.prototype.serialize;
+            nodeType.prototype.serialize = function() {
+                console.log("[serialize] Serializing node:", this);
+                const data = originalSerialize ? originalSerialize.call(this) : {};
+                if (this.missing_models) {
+                    data.missing_models = this.missing_models;
+                }
+                return data;
+            };
+
+            // Store the original configure method
+            const originalConfigure = nodeType.prototype.configure;
+
+            // Restore method using configure
+            nodeType.prototype.configure = function(data) {
+                console.log("[configure] Configuring node:", this, data);
+                if (data.missing_models) {
+                    this.missing_models = data.missing_models;
+                }
+                
+                // Call original configure if it exists
+                if (originalConfigure) {
+                    originalConfigure.call(this, data);
+                }
+
+                // Update the widget after configuration
+                if (this.missing_models) {
+                    const selectWidget = this.widgets.find(w => w.name === "select_model");
+                    if (selectWidget) {
+                        const filenames = this.missing_models.map(m => m.filename);
+                        selectWidget.options.values = filenames;
+                        if (filenames.length > 0) {
+                            selectWidget.value = filenames[0];
+                        }
+                        this.setDirtyCanvas(true);
+                    }
+                }
+            };
+
+            // Remove onConfigure as it's redundant with configure
+            delete nodeType.prototype.onConfigure;
+        }
     }
 });

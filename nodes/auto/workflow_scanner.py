@@ -17,7 +17,6 @@ async def scan_workflow(prompt):
 
         inputs = node.get("inputs", {})
         for key, input_path in inputs.items():
-            print(input_path)
             if not isinstance(input_path, str):
                 continue
 

@@ -37,9 +37,7 @@ class AutoModelDownloader(BaseModelDownloader):
         self.initialized = False
         print("[AutoModelDownloader] Initialized")
 
-    def process(self, select_model, prompt, node_id):
-        print(f"[process] Called with select_model={select_model}, prompt={prompt}, node_id={node_id}")
-        
+    def process(self, select_model, prompt, node_id):        
         if not self.initialized:
             # Create new event loop for this thread
             loop = asyncio.new_event_loop()
@@ -59,7 +57,7 @@ class AutoModelDownloader(BaseModelDownloader):
                         result = await search_for_model(model['filename'])
                         if result:
                             model['repo_id'] = result['repo_id']
-                            print(f"Found repo: {result['repo_id']} for {model['filename']}")            
+                            print(f"→Found repo: {result['repo_id']} for {model['filename']}")            
                 
                 loop.run_until_complete(search_all_models())
             finally:
@@ -112,6 +110,7 @@ class AutoModelDownloader(BaseModelDownloader):
         print(f"[process] Returning model info: repo_id={repo_id}, filename={selected_model['filename']}, local_path={selected_model['local_path']}")
         return (repo_id, selected_model['filename'], selected_model['local_path'])
     
+    # TODO: filter out models without repo_id here, maybe keep a second list for valid ones?
     def update_model_list(self, models):
         print(f"[update_model_list] Updating with models: {models}")
         for model in models:
@@ -138,3 +137,18 @@ class AutoModelDownloader(BaseModelDownloader):
         }
         print(f"[update_model_list] Returning widget update: {result}")
         return result
+
+    def serialize(self):
+        print("[serialize] Serializing missing_models:", self.missing_models)
+
+        # Save the missing_models list and initialized state
+        return {
+            "missing_models": self.missing_models,
+            "initialized": self.initialized
+        }
+    
+    def deserialize(self, data):
+        print(f"[deserialize] Data: {data}")
+        self.missing_models = data.get("missing_models", [])
+        self.initialized = data.get("initialized", False)
+        # Restore other relevant state variables
