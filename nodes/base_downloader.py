@@ -33,15 +33,21 @@ class BaseModelDownloader:
                 "max": 100
             })
 
-    def prepare_download_path(self, local_path):
+    def prepare_download_path(self, local_path, filename):
         full_path = os.path.join(get_base_dir(), local_path)
         if not os.path.exists(full_path):
             os.makedirs(full_path, exist_ok=True)
         return full_path
 
-    def handle_download(self, download_func, *args, **kwargs):
+    def handle_download(self, download_func, save_path, filename, overwrite=False, **kwargs):
         try:
-            download_func(*args, **kwargs)
+            file_path = os.path.join(save_path, filename)
+            if os.path.exists(file_path) and not overwrite:
+                print(f"File already exists and overwrite is False: {file_path}")
+                return {}
+            
+            kwargs['save_path'] = save_path
+            download_func(**kwargs)
             self.update_status("Complete!", 100)
             return {}
         except Exception as e:

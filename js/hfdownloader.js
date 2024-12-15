@@ -39,8 +39,7 @@ app.registerExtension({
 
             // Add progress handling method
             origNode.prototype.setProgress = function(progress) {
-                console.error("Setting progress on node:", progress);
-                this.progress = progress;
+                this.progress = progress
                 this.setDirtyCanvas(true);
             };
         });

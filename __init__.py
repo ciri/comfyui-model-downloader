@@ -12,9 +12,9 @@ NODE_CLASS_MAPPINGS = {
 
 # Display names
 NODE_DISPLAY_NAME_MAPPINGS = { 
-    "HF Downloader": "HF Downloader",
-    "Auto Model Downloader": "Auto Model Downloader",
-    "CivitAI Downloader": "CivitAI Downloader",
+    "HF Downloader": "HF Download",
+    "Auto Model Downloader": "Auto Model Finder (Experimental)",
+    "CivitAI Downloader": "CivitAI Download",
 }
 
 # Web directory for JavaScript files

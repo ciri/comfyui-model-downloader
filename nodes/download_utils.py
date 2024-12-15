@@ -2,6 +2,7 @@ import requests
 from tqdm import tqdm
 import os
 import re
+import shutil
 
 class DownloadManager:
     @staticmethod
@@ -12,20 +13,30 @@ class DownloadManager:
         total_size = int(response.headers.get('content-length', 0))
         filename = DownloadManager._get_filename(response, url)
         full_path = os.path.join(save_path, filename)
+        temp_path = full_path + '.tmp'
         
         downloaded = 0
-        with open(full_path, 'wb') as file:
-            with tqdm(total=total_size, unit='iB', unit_scale=True, desc=filename) as pbar:
-                for data in response.iter_content(chunk_size=chunk_size):
-                    size = file.write(data)
-                    downloaded += size
-                    pbar.update(size)
-                    
-                    if progress_callback and total_size > 0:
-                        progress = (downloaded / total_size) * 100.0
-                        progress_callback.set_progress(progress)
-        
-        return full_path
+        try:
+            with open(temp_path, 'wb') as file:
+                with tqdm(total=total_size, unit='iB', unit_scale=True, desc=filename) as pbar:
+                    for data in response.iter_content(chunk_size=chunk_size):
+                        size = file.write(data)
+                        downloaded += size
+                        pbar.update(size)
+                        
+                        if progress_callback and total_size > 0:
+                            progress = (downloaded / total_size) * 100.0
+                            progress_callback.set_progress(progress)
+            
+            # Only move the file if the download completed successfully
+            shutil.move(temp_path, full_path)
+            return full_path
+            
+        except Exception as e:
+            # Clean up the temp file if something goes wrong
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+            raise e
 
     @staticmethod
     def _get_filename(response, url):

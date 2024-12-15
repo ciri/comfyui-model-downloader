@@ -1,5 +1,3 @@
-
-
 from .base_downloader import BaseModelDownloader, get_model_dirs
 from .download_utils import DownloadManager
 
@@ -29,13 +27,15 @@ class HFDownloader(BaseModelDownloader):
         
         print(f'downloading model {repo_id} {filename} {local_path} {node_id} {overwrite}')
         self.node_id = node_id
-        save_path = self.prepare_download_path(local_path)
+        save_path = self.prepare_download_path(local_path, filename)
         url = f"https://huggingface.co/{repo_id}/resolve/main/{filename}"
         
         return self.handle_download(
             DownloadManager.download_with_progress,
-            url=url,
             save_path=save_path,
+            filename=filename,
+            overwrite=overwrite,
+            url=url,
             progress_callback=self
         )
     

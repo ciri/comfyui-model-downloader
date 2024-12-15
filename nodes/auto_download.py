@@ -4,38 +4,13 @@ from server import PromptServer
 from aiohttp import web
 from .base_downloader import BaseModelDownloader, get_model_dirs
 import sys
-import logging
+import aiohttp
+import re
+import asyncio
 
 
 # Global dictionary to store node instances
 node_instances = {}
-
-@PromptServer.instance.routes.post("/customnode/comfyui-model-downloader/update_model_list")
-async def update_model_list_endpoint(request):
-    print(f"[update_model_list_endpoint] Received request")
-    try:
-        json_data = await request.json()
-        print(f"[update_model_list_endpoint] Received data: {json_data}")
-        
-        node_id = str(json_data.get("id"))
-        models  = json_data.get("models", [])
-        
-        node = node_instances.get(node_id)
-        print(f"[update_model_list_endpoint] Found node instances: {node_instances}")
-        print(f"[update_model_list_endpoint] Found node: {node}")
-        
-        if node and isinstance(node, AutoModelDownloader):
-            result = node.update_model_list(models)
-            print(f"[update_model_list_endpoint] Update result: {result}")
-            return web.json_response({"success": True, "result": result})
-        else:
-            print(f"[update_model_list_endpoint] Node not found or wrong type. ID: {node_id}, Type: {type(node)}")
-            return web.json_response({"success": False, "error": f"Node not found: {node_id}"})
-
-        
-    except Exception as e:
-        print(f"[update_model_list_endpoint] Error: {str(e)}", exc_info=True)
-        return web.json_response({"success": False, "error": str(e)})
 
 
 class AutoModelDownloader(BaseModelDownloader):
@@ -43,8 +18,7 @@ class AutoModelDownloader(BaseModelDownloader):
     def INPUT_TYPES(cls):
         return {
             "required": {
-                # Define as COMBO special type
-                "select_model": (["SCAN FIRST"], {
+                "select_model": (["Scan First"], {
                     "choices": ["Scan First"],
                     "default": "Scan First"
                 }),
@@ -68,44 +42,73 @@ class AutoModelDownloader(BaseModelDownloader):
         super().__init__()
         self.missing_models = []
         self.initialized = False
-        self.widget_updated = False
-        self.node_id = None
         print("[AutoModelDownloader] Initialized")
 
     def process(self, select_model, prompt, node_id):
         print(f"[process] Called with select_model={select_model}, prompt={prompt}, node_id={node_id}")
         
-        node_instances[node_id] = self
-        
         if not self.initialized:
-            self.node_id = node_id
             self.missing_models = self._scan_workflow(prompt)
-            print(f"[process] First run, found missing models: {self.missing_models}")
+            print(f"[process] Found missing models: {self.missing_models}")
             
+            # Create new event loop for this thread
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            # Search for each model
+            async def search_all_models():
+                for model in self.missing_models:
+                    result = await search_for_model(model['filename'])
+                    if result:
+                        model['repo_id'] = result['repo_id']
+                        print(f"Found repo: {result['repo_id']} for {model['filename']}")            
+            try:
+                loop.run_until_complete(search_all_models())
+            finally:
+                loop.close()
+            
+            self.initialized = True
+
+                        
+            # Update widget with found models
+            filenames = [m['filename'] for m in self.missing_models]
+            if not filenames:
+                filenames = ["No models found"]
+                return ("No models found", "")
+            
+            self.update_model_list(self.missing_models)
+
+            # Send update to frontend with models and select first one
             PromptServer.instance.send_sync("scan_complete", {
                 "node": node_id,
                 "models": self.missing_models
             })
-            self.initialized = True
-            #return ("", "")
-            return ("", "")
 
+            # Check if we have any valid models (with repo_id)
+            valid_models = [m for m in self.missing_models if m.get('repo_id')]
+            if valid_models:
+                return (
+                    valid_models[0]['repo_id'],
+                    valid_models[0]['filename']
+                )
+            
+            raise Exception("No valid models found to download")
 
         # Handle missing or default values
-        if not select_model:
+        if not select_model or select_model == "Scan First":
             print("[process] No model selected. Skipping...")
-            return ("", "")
+            raise Exception("Select a model")
 
         # Find selected model
         selected_model = next((m for m in self.missing_models if m['filename'] == select_model), None)
         if not selected_model:
             print(f"[process] No model found for {select_model}")
-            return ("", "")
+            raise Exception("Model not found")
         
         repo_id = selected_model.get('repo_id', '')
         if not repo_id:
             print(f"[process] No repo_id found for {select_model}")
-            return ("", "")
+            raise Exception("No repository found")
         
         print(f"[process] Returning model info: repo_id={repo_id}, filename={selected_model['filename']}")
         return (repo_id, selected_model['filename'])
@@ -146,7 +149,6 @@ class AutoModelDownloader(BaseModelDownloader):
 
     def check_model_exists(self, filename, model_type):
         print(f"Checking model {filename} in {model_type}")
-
         base_path = self.get_model_path(model_type)
         full_path = os.path.join(base_path, filename)
         exists = os.path.exists(full_path)
@@ -185,10 +187,92 @@ class AutoModelDownloader(BaseModelDownloader):
         print(f"[update_model_list] Returning widget update: {result}")
         return result
 
-    def onWidgetChanged(self, widget_name, value):
-        print(f"[onWidgetChanged] Called with widget_name={widget_name}, value={value}")
-        if widget_name == "select_model":
-            # Handle the change in selected model
-            self.selected_model = value
+import aiohttp
+import re
 
-        return True
+async def search_for_model(filename):
+    """
+    Search for a model file on Hugging Face based on its filename components.
+    """
+    def extract_model_components(filename):
+        name_without_extension = re.sub(r'\.[^/.]+$', '', filename)
+        parts = re.split(r'[-_]', name_without_extension)
+        
+        core_name = []
+        version = None
+        tags = []
+        
+        for part in parts:
+            if re.match(r'v?\d+(-\d+)?', part):
+                version = part
+            elif re.match(r'[a-zA-Z]+', part):
+                if not core_name:
+                    core_name.append(part)
+                else:
+                    tags.append(part)
+            elif core_name:
+                tags.append(part)
+        
+        core_name = "_".join(core_name) if core_name else None
+        return {"core_name": core_name, "version": version, "tags": tags}
+    
+    print(f"Searching for model: {filename}")
+    components = extract_model_components(filename)
+    print(f"Extracted components: {components}")
+    
+    base_url = "https://huggingface.co/api/models"
+    search_queries = []
+    
+    # Construct search queries
+    if components["core_name"]:
+        if components["version"]:
+            search_queries.append(f"{components['core_name']}_{components['version']}")
+        search_queries.append(components["core_name"])
+    search_queries.append("_".join([components["core_name"], *components["tags"]]))
+
+    print(f"Search queries: {search_queries}")
+
+    headers = {}
+    # Add HF token support if needed
+    # if hf_token:
+    #     headers["Authorization"] = f"Bearer {hf_token}"
+
+    matching_result = None
+    async with aiohttp.ClientSession() as session:
+        # Search repositories
+        for query in search_queries:
+            print(f"Searching for repository: {query}")
+            async with session.get(f"{base_url}?full=true&search={query}", headers=headers) as response:
+                if response.status == 200:
+                    repos = await response.json()
+                    if repos:
+                        for repo in repos:
+                            # Check repository siblings for the exact file match
+                            # print(f"Checking repository: {repo['modelId']}")
+                            if "siblings" in repo:
+                                match = next(
+                                    (sibling for sibling in repo["siblings"] if sibling["rfilename"] == filename),
+                                    None
+                                )
+                                if match:
+                                    matching_result = {
+                                        "repo_id": repo["modelId"],
+                                        "file": match
+                                    }
+                                    break
+                        if matching_result:
+                            break
+                else:
+                    print(f"Failed to search for repository {query}: {response.status}")
+            if matching_result:
+                break
+
+    if matching_result:
+        print(f"Match found: {matching_result['repo_id']}")
+        return {
+            "repo_id": matching_result["repo_id"],
+            "filename": filename
+        }
+    else:
+        print(f"No exact match found for {filename}")
+        return None
