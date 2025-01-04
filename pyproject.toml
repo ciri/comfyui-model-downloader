@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-model-downloader"
+description = "This node allows downloading models directly within ComfyUI for easier use and integration."
+version = "1.0.0"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/ciri/comfyui-model-downloader"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "comfyui-model-downloader"
+Icon = ""
