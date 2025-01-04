@@ -68,7 +68,7 @@ To use the model downloader within your ComfyUI environment:
 5. To avoid repeated downloading, make sure to bypass the node after you've downloaded a model.
 
 ## Roadmap (tentative)
-- [ ] Add persistance for auto model finder between runs
+- [x] Add persistance for auto model finder between runs
 - [ ] Add more model finders (including CivitAI)
 - [ ] Add more downloaders
 - [ ] Add authentication for HF Downloader
