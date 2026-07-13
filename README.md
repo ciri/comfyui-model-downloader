@@ -26,6 +26,7 @@ Parameters:
 * filename: filename to download from the repository
 * save_dir: destination directory
 * overwrite: overwrite existing file if it exists
+* hf_token: optional Hugging Face access token for gated or private repositories
 
 ### CivitAI Downloader
 ![CivitAI|250](assets/civitai-downloader.png?raw=true)
