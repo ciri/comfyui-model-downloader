@@ -34,7 +34,7 @@ class BaseModelDownloader:
             })
 
 
-    def prepare_download_path(self, local_path, filename):
+    def prepare_download_path(self, local_path, filename=None):
         if os.path.isabs(local_path):
             full_path = local_path
         elif local_path in folder_paths.folder_names_and_paths:
