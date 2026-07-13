@@ -75,7 +75,7 @@ Download destinations follow ComfyUI's model folder configuration, including dir
 - [x] Add persistance for auto model finder between runs
 - [ ] Add more model finders (including CivitAI)
 - [ ] Add more downloaders
-- [ ] Add authentication for HF Downloader
+- [x] Add authentication for HF Downloader
 
 
 
@@ -85,6 +85,15 @@ Contributions are welcome! Please:
 * Fork the repository
 * Create a feature branch
 * Submit a pull request
+
+### Testing
+
+Install the runtime dependencies and run the complete test suite:
+
+```
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+```
 
 ## Support
 For support, questions, or contributions, please open an issue on the GitHub repository page. Contributions are welcome!
