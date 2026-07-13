@@ -24,8 +24,16 @@ def load_package(folder_paths=None):
     tqdm_module.tqdm = DummyProgressBar
     sys.modules["tqdm"] = tqdm_module
 
-    if folder_paths is not None:
-        sys.modules["folder_paths"] = folder_paths
+    if folder_paths is None:
+        folder_paths = types.ModuleType("folder_paths")
+        folder_paths.models_dir = str(PROJECT_ROOT / "models")
+        folder_paths.folder_names_and_paths = {
+            "checkpoints": ([str(PROJECT_ROOT / "models" / "checkpoints")], set())
+        }
+        folder_paths.get_folder_paths = lambda folder_name: list(
+            folder_paths.folder_names_and_paths[folder_name][0]
+        )
+    sys.modules["folder_paths"] = folder_paths
 
     package = types.ModuleType(PACKAGE_NAME)
     package.__path__ = [str(PROJECT_ROOT)]

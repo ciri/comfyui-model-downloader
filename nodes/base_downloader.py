@@ -1,16 +1,16 @@
 from server import PromptServer
+import folder_paths
 import os
 
 def get_base_dir():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-    models_dir = os.path.join(base_dir, 'models')
-    return models_dir
+    return folder_paths.models_dir
 
 def get_model_dirs():
-    models_dir = get_base_dir()
-    model_dirs = [d for d in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, d))]
-    return model_dirs
+    return sorted(
+        folder_name
+        for folder_name, (paths, _) in folder_paths.folder_names_and_paths.items()
+        if paths and folder_name != "custom_nodes"
+    )
 
 class BaseModelDownloader:
     RETURN_TYPES = ()
@@ -35,19 +35,24 @@ class BaseModelDownloader:
 
 
     def prepare_download_path(self, local_path, filename):
-        # Just create the base directory, don't include the filename
-        full_path = os.path.join(get_base_dir(), local_path)
+        if os.path.isabs(local_path):
+            full_path = local_path
+        elif local_path in folder_paths.folder_names_and_paths:
+            full_path = folder_paths.get_folder_paths(local_path)[0]
+        else:
+            full_path = os.path.join(get_base_dir(), local_path)
+
         if not os.path.exists(full_path):
             os.makedirs(full_path, exist_ok=True)
         return full_path
-    
+
     def handle_download(self, download_func, save_path, filename, overwrite=False, **kwargs):
         try:
             file_path = os.path.join(save_path, filename)
             if os.path.exists(file_path) and not overwrite:
                 print(f"File already exists and overwrite is False: {file_path}")
                 return {}
-            
+
             kwargs['save_path'] = save_path
             download_func(**kwargs)
             self.update_status("Complete!", 100)

@@ -1,11 +1,8 @@
+import folder_paths
 import os
 
 def get_base_dir():
-    # Get the current file's directory
-    current_dir = os.path.dirname(os.path.abspath(__file__))    
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_dir))))
-    models_dir = os.path.join(base_dir, 'models')
-    return models_dir
+    return folder_paths.models_dir
 
 def get_model_dirs():
     models_dir = get_base_dir()
@@ -16,8 +13,9 @@ def get_model_dirs():
     return model_dirs if model_dirs else ["models"]  # Return default if no subdirectories found
 
 def get_model_path(model_type):
-    base_dir = get_base_dir()
-    return os.path.join(base_dir, model_type)
+    if model_type in folder_paths.folder_names_and_paths:
+        return folder_paths.get_folder_paths(model_type)[0]
+    return os.path.join(get_base_dir(), model_type)
 
 def check_model_exists(filename, model_type):
     local_path = get_model_path(model_type)

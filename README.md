@@ -69,6 +69,8 @@ To use the model downloader within your ComfyUI environment:
 4. Execute the node to start the download process.
 5. To avoid repeated downloading, make sure to bypass the node after you've downloaded a model.
 
+Download destinations follow ComfyUI's model folder configuration, including directories marked as default in `extra_model_paths.yaml`.
+
 ## Roadmap (tentative)
 - [x] Add persistance for auto model finder between runs
 - [ ] Add more model finders (including CivitAI)
