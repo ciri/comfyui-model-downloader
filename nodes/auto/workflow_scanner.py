@@ -2,7 +2,7 @@ from .utils import get_model_path
 from .constants import EXTENSION_MAP
 import os
 
-async def scan_workflow(prompt):
+def scan_workflow(prompt):
     print(f"[Scannner] Scanning workflow.")
     if not prompt:
         print("No workflow found")

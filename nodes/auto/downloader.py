@@ -1,4 +1,3 @@
-import asyncio
 from .workflow_scanner import scan_workflow
 from .model_search import search_for_model
 from .utils import get_model_path, check_model_exists
@@ -49,38 +48,21 @@ class AutoModelDownloader(BaseModelDownloader):
         if not select_model or select_model == "Scan First" or workflow_changed:
             self.log = ""
 
-            # Create new event loop for this thread
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-            # Run scan_workflow synchronously
-            try:
-                self.missing_models = loop.run_until_complete(scan_workflow(prompt))
-                
-                # Remove duplicates
-                seen = set()
-                unique_models = [model for model in self.missing_models if not (identifier := (model['filename'], model['local_path'])) in seen and not seen.add(identifier)]
-                self.missing_models = unique_models
+            self.missing_models = scan_workflow(prompt)
 
-                valid_models = []
-                # Search for each model
-                async def search_all_models():
-                    if not self.missing_models:  # Check if list is empty
-                        return
-                    
-                    for model in self.missing_models:
-                        result = await search_for_model(model['filename'])
-                        if result and result.get('repo_id'):  # Only add if we have a valid repo_id
-                            model['repo_id'] = result['repo_id']
-                            valid_models.append(model)
+            seen = set()
+            unique_models = [model for model in self.missing_models if not (identifier := (model['filename'], model['local_path'])) in seen and not seen.add(identifier)]
+            self.missing_models = unique_models
 
-                            print(f"[Downloader] {model['filename']} → {model['repo_id']}")
-                        else:
-                            print(f"[Downloader] {model['filename']} → not found")
-
-                loop.run_until_complete(search_all_models())
-            finally:
-                loop.close()
+            valid_models = []
+            for model in self.missing_models:
+                result = search_for_model(model['filename'])
+                if result and result.get('repo_id'):
+                    model['repo_id'] = result['repo_id']
+                    valid_models.append(model)
+                    print(f"[Downloader] {model['filename']} → {model['repo_id']}")
+                else:
+                    print(f"[Downloader] {model['filename']} → not found")
 
             self.missing_models = valid_models            
                     
