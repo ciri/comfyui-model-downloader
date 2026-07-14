@@ -21,13 +21,18 @@ class WorkflowExampleTests(unittest.TestCase):
         )
         self.assertEqual([[1, 1, 0, 2, 0, "STRING"]], workflow["links"])
 
-    def test_civitai_workflow_pins_public_tiny_file_without_key(self):
+    def test_civitai_workflow_downloads_and_previews_an_image(self):
         workflow = self.load_workflow("civitai-tiny-download.json")
-        node = workflow["nodes"][0]
+        nodes = {node["id"]: node for node in workflow["nodes"]}
 
-        self.assertEqual("CivitAI Downloader", node["type"])
-        self.assertEqual(["723360", "1047814", ""], node["widgets_values"][:3])
-        self.assertEqual([[1, 1, 0, 2, 0, "STRING"]], workflow["links"])
+        self.assertEqual("CivitAI Downloader", nodes[1]["type"])
+        self.assertEqual(["71", "80", ""], nodes[1]["widgets_values"][:3])
+        self.assertEqual("Downloaded Checkpoint Loader", nodes[8]["type"])
+        self.assertEqual("PreviewImage", nodes[7]["type"])
+        self.assertEqual(
+            [433342518721672, "randomize", 20, 20.0, "euler", "exponential", 1.0],
+            nodes[5]["widgets_values"],
+        )
 
     def test_auto_model_finder_workflow_is_scan_only(self):
         workflow = self.load_workflow("auto-model-finder-scan.json")
@@ -46,7 +51,10 @@ class WorkflowExampleTests(unittest.TestCase):
         self.assertEqual("HF Downloader", nodes[1]["type"])
         self.assertEqual("Downloaded Checkpoint Loader", nodes[8]["type"])
         self.assertEqual("KSampler", nodes[5]["type"])
-        self.assertEqual([1, 20, 7.0, "euler", "simple", 1.0], nodes[5]["widgets_values"])
+        self.assertEqual(
+            [433342518721672, "randomize", 20, 20.0, "euler", "exponential", 1.0],
+            nodes[5]["widgets_values"],
+        )
         self.assertEqual([512, 512, 1], nodes[4]["widgets_values"])
         self.assertEqual("PreviewImage", nodes[7]["type"])
         self.assertIn([1, 1, 0, 8, 0, "STRING"], workflow["links"])

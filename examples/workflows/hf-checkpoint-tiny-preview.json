@@ -103,7 +103,7 @@
         {"name": "LATENT", "type": "LATENT", "links": [8]}
       ],
       "properties": {"Node name for S&R": "KSampler"},
-      "widgets_values": [1, 20, 7.0, "euler", "simple", 1.0]
+      "widgets_values": [433342518721672, "randomize", 20, 20.0, "euler", "exponential", 1.0]
     },
     {
       "id": 6,

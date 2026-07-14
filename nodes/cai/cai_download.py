@@ -4,6 +4,16 @@ import requests
 
 class CivitAIDownloader(BaseModelDownloader):
     base_url = 'https://civitai.com/api'
+
+    @staticmethod
+    def select_download_file(files):
+        if not files:
+            raise Exception("No files found for the selected model version")
+
+        return next(
+            (file for file in files if file["name"].endswith(".safetensors")),
+            files[0],
+        )
     
     @classmethod
     def INPUT_TYPES(cls):
@@ -47,9 +57,9 @@ class CivitAIDownloader(BaseModelDownloader):
                     if not files:
                         raise Exception(f"No files found for version {version_id}")
                     
-                    # Get the primary file (usually the first one)
-                    filename = files[0]['name']
-                    url = files[0]['downloadUrl']
+                    file = self.select_download_file(files)
+                    filename = file['name']
+                    url = file['downloadUrl']
                     return filename, url
                     
             # If we reach here, the specified version was not found
@@ -65,8 +75,9 @@ class CivitAIDownloader(BaseModelDownloader):
             if not files:
                 raise Exception(f"No files found for latest version of model ID {model_id}")
                 
-            filename = files[0]['name']
-            url = files[0]['downloadUrl']
+            file = self.select_download_file(files)
+            filename = file['name']
+            url = file['downloadUrl']
             return filename, url
     
     def download(self, model_id, version_id, api_key, save_dir, node_id):

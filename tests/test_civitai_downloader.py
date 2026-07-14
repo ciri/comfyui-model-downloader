@@ -110,6 +110,29 @@ class CivitAIDownloaderTests(unittest.TestCase):
 
         self.assertEqual(("selected.bin", "https://selected"), result)
 
+    def test_safetensors_is_preferred_over_an_archive(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {
+            "modelVersions": [
+                {
+                    "id": 100,
+                    "files": [
+                        {"name": "styles.zip", "downloadUrl": "https://archive"},
+                        {"name": "model.safetensors", "downloadUrl": "https://model"},
+                    ],
+                }
+            ]
+        }
+
+        with patch.object(self.module.requests, "get", return_value=response):
+            result = self.module.CivitAIDownloader().get_download_filename_url(
+                "123",
+                "100",
+                "",
+            )
+
+        self.assertEqual(("model.safetensors", "https://model"), result)
+
     def test_public_metadata_request_omits_authorization(self):
         response = Mock(status_code=200)
         response.json.return_value = {
