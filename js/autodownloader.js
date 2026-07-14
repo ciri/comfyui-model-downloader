@@ -1,6 +1,19 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
+function updateModelOptions(node, models) {
+    node.missing_models = models;
+    const selectWidget = node.widgets.find(w => w.name === "select_model");
+    if (!selectWidget) return;
+
+    const selections = node.missing_models.map(model => model.selection);
+    selectWidget.options.values = selections;
+    if (selections.length > 0 && !selections.includes(selectWidget.value)) {
+        selectWidget.value = selections[0];
+    }
+    node.setDirtyCanvas(true);
+}
+
 app.registerExtension({
     name: "Auto Model Downloader",
     async setup() {
@@ -10,16 +23,7 @@ app.registerExtension({
             if (!node || node.type !== "Auto Model Downloader") return;
 
             try {                
-                node.missing_models = detail.models;
-                const selectWidget = node.widgets.find(w => w.name === "select_model");
-                if (selectWidget) {
-                    const selections = node.missing_models.map(model => model.selection);
-                    selectWidget.options.values = selections;
-                    if (selections.length > 0 && !selections.includes(selectWidget.value)) {
-                        selectWidget.value = selections[0];
-                    }
-                    node.setDirtyCanvas(true);
-                }
+                updateModelOptions(node, detail.models);
             } catch (error) {
                 console.error("Error updating model list:", error);
             }
@@ -28,6 +32,26 @@ app.registerExtension({
     },
     async beforeRegisterNodeDef(nodeType, nodeData, app)  {
         if (nodeType.comfyClass == "Auto Model Downloader") {
+            const originalOnNodeCreated = nodeType.prototype.onNodeCreated;
+            nodeType.prototype.onNodeCreated = function() {
+                originalOnNodeCreated?.call(this);
+                this.addWidget("button", "rescan_models", "Rescan models", async () => {
+                    try {
+                        const { output } = await app.graphToPrompt();
+                        const response = await api.fetchApi("/model-downloader/scan", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ prompt: output }),
+                        });
+                        if (!response.ok) throw new Error(await response.text());
+                        const { models } = await response.json();
+                        updateModelOptions(this, models);
+                    } catch (error) {
+                        console.error("Error rescanning models:", error);
+                    }
+                });
+            };
+
             const synchronizeOutputLinks = (node) => {
                 const graphLinks = node.graph?.links;
                 if (!graphLinks) return;

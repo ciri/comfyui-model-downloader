@@ -49,7 +49,7 @@ Load the credential-free workflows in [`examples/workflows`](examples/workflows)
 
 Scans the current workflow for missing known model files and looks for matching Hugging Face repositories. Connect its `repo_id`, `filename`, and `local_path` outputs directly to the HF Downloader.
 
-When multiple models are missing, choose one from `select_model`. Choices include the ComfyUI model directory (for example, `checkpoints/model.safetensors`) so same-named files remain distinct. The scan runs on every queue; if a previously selected model is no longer missing, the node safely uses the first current match instead.
+When multiple models are missing, choose one from `select_model`. Choices include the ComfyUI model directory (for example, `checkpoints/model.safetensors`) so same-named files remain distinct. Click `Rescan models` after changing the canvas to update this list without running the workflow. The scan also runs on every queue; if a previously selected model is no longer missing, the node safely uses the first current match instead.
 
 ## Installation
 

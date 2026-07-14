@@ -29,6 +29,13 @@ class DownloaderFrontendTests(unittest.TestCase):
         self.assertNotIn("this.triggerSlot(0)", source)
         self.assertNotIn("getExtraProperties", source)
 
+    def test_auto_model_finder_has_an_explicit_rescan_button(self):
+        source = (Path(__file__).parents[1] / "js" / "autodownloader.js").read_text()
+
+        self.assertIn('"Rescan models"', source)
+        self.assertIn('api.fetchApi("/model-downloader/scan"', source)
+        self.assertIn("await app.graphToPrompt()", source)
+
 
 if __name__ == "__main__":
     unittest.main()

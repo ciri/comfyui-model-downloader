@@ -216,6 +216,33 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
 
         self.assertEqual("DYNPROMPT", hidden_inputs["dynprompt"])
 
+    def test_find_missing_models_returns_selection_keys(self):
+        missing_model = {
+            "filename": "model.safetensors",
+            "repo_id": None,
+            "local_path": "checkpoints",
+        }
+
+        with patch.object(self.module, "scan_workflow", return_value=[missing_model]), \
+                patch.object(
+                    self.module,
+                    "search_for_model",
+                    return_value={"repo_id": "owner/model"},
+                ):
+            models = self.module.find_missing_models({"1": {}})
+
+        self.assertEqual(
+            [
+                {
+                    "filename": "model.safetensors",
+                    "repo_id": "owner/model",
+                    "local_path": "checkpoints",
+                    "selection": "checkpoints/model.safetensors",
+                }
+            ],
+            models,
+        )
+
     def test_workflow_scanner_is_synchronous(self):
         scanner = importlib.import_module(
             f"{PACKAGE_NAME}.nodes.auto.workflow_scanner"

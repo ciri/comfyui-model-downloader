@@ -1,9 +1,42 @@
+import asyncio
 import uuid
 
+from aiohttp import web
 from .workflow_scanner import scan_workflow
 from .model_search import search_for_model
 from server import PromptServer
 from ..base_downloader import BaseModelDownloader
+
+
+def find_missing_models(prompt):
+    seen = set()
+    missing_models = []
+    for model in scan_workflow(prompt):
+        identifier = (model["filename"], model["local_path"])
+        if identifier in seen:
+            continue
+        seen.add(identifier)
+
+        result = search_for_model(model["filename"])
+        if result and result.get("repo_id"):
+            model["repo_id"] = result["repo_id"]
+            model["selection"] = AutoModelDownloader._selection_for(model)
+            missing_models.append(model)
+            print(f"[Downloader] {model['filename']} → {model['repo_id']}")
+        else:
+            print(f"[Downloader] {model['filename']} → not found")
+    return missing_models
+
+
+@PromptServer.instance.routes.post("/model-downloader/scan")
+async def scan_models(request):
+    data = await request.json()
+    prompt = data.get("prompt")
+    if not isinstance(prompt, dict):
+        return web.json_response({"error": "prompt must be an object"}, status=400)
+
+    models = await asyncio.to_thread(find_missing_models, prompt)
+    return web.json_response({"models": models})
 
 class AutoModelDownloader(BaseModelDownloader):
     @classmethod
@@ -37,24 +70,8 @@ class AutoModelDownloader(BaseModelDownloader):
 
     def process(self, select_model, dynprompt, node_id, log=""):
         self.log = ""
-        seen = set()
-        missing_models = []
         prompt = self._original_prompt(dynprompt)
-        for model in scan_workflow(prompt):
-            identifier = (model["filename"], model["local_path"])
-            if identifier in seen:
-                continue
-            seen.add(identifier)
-
-            result = search_for_model(model["filename"])
-            if result and result.get("repo_id"):
-                model["repo_id"] = result["repo_id"]
-                model["selection"] = self._selection_for(model)
-                missing_models.append(model)
-                print(f"[Downloader] {model['filename']} → {model['repo_id']}")
-            else:
-                print(f"[Downloader] {model['filename']} → not found")
-
+        missing_models = find_missing_models(prompt)
         self.missing_models = missing_models
         if not missing_models:
             PromptServer.instance.send_sync("scan_complete", {

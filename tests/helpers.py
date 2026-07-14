@@ -8,8 +8,17 @@ PACKAGE_NAME = "comfyui_model_downloader"
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+class Routes:
+    @staticmethod
+    def post(path):
+        return lambda handler: handler
+
+
 class PromptServer:
-    instance = types.SimpleNamespace(send_sync=lambda *args, **kwargs: None)
+    instance = types.SimpleNamespace(
+        send_sync=lambda *args, **kwargs: None,
+        routes=Routes(),
+    )
 
 
 def load_package(folder_paths=None, execute=False):
