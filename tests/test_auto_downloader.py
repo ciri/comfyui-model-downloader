@@ -1,6 +1,5 @@
 import asyncio
 import importlib
-import math
 import unittest
 from unittest.mock import Mock, patch
 
@@ -164,15 +163,58 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
                         {"repo_id": "owner/first"},
                         {"repo_id": "owner/second"},
                     ],
-                ):
+        ):
             downloader.process("Scan First", prompt, "node-1")
 
-        result = downloader.process("second.bin", prompt, "node-1")
+        with patch.object(self.module, "scan_workflow", return_value=missing_models), \
+                patch.object(
+                    self.module,
+                    "search_for_model",
+                    side_effect=[
+                        {"repo_id": "owner/first"},
+                        {"repo_id": "owner/second"},
+                    ],
+                ):
+            result = downloader.process("clip_models/second.bin", prompt, "node-1")
 
         self.assertEqual(("owner/second", "second.bin", "clip_models"), result)
 
+    def test_process_falls_back_when_selected_model_is_removed(self):
+        downloader = self.module.AutoModelDownloader()
+        prompt = {"1": {"inputs": {"ckpt_name": "second.safetensors"}}}
+        remaining_model = {
+            "filename": "second.safetensors",
+            "repo_id": None,
+            "local_path": "checkpoints",
+        }
+
+        with patch.object(self.module, "scan_workflow", return_value=[remaining_model]), \
+                patch.object(
+                    self.module,
+                    "search_for_model",
+                    return_value={"repo_id": "owner/second"},
+                ):
+            result = downloader.process(
+                "checkpoints/removed.safetensors",
+                prompt,
+                "node-1",
+            )
+
+        self.assertEqual(
+            ("owner/second", "second.safetensors", "checkpoints"),
+            result,
+        )
+
     def test_model_finder_is_not_execution_cached(self):
-        self.assertTrue(math.isnan(self.module.AutoModelDownloader.IS_CHANGED()))
+        self.assertNotEqual(
+            self.module.AutoModelDownloader.IS_CHANGED(),
+            self.module.AutoModelDownloader.IS_CHANGED(),
+        )
+
+    def test_model_finder_receives_the_current_dynamic_prompt(self):
+        hidden_inputs = self.module.AutoModelDownloader.INPUT_TYPES()["hidden"]
+
+        self.assertEqual("DYNPROMPT", hidden_inputs["dynprompt"])
 
     def test_workflow_scanner_is_synchronous(self):
         scanner = importlib.import_module(
@@ -213,6 +255,35 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
             )
 
         self.assertEqual([], result)
+
+    def test_workflow_scanner_skips_the_model_finder_selection(self):
+        scanner = importlib.import_module(
+            f"{PACKAGE_NAME}.nodes.auto.workflow_scanner"
+        )
+
+        result = scanner.scan_workflow(
+            {
+                "1": {
+                    "class_type": "CheckpointLoaderSimple",
+                    "inputs": {"ckpt_name": "missing.safetensors"},
+                },
+                "2": {
+                    "class_type": "Auto Model Downloader",
+                    "inputs": {"select_model": "checkpoints/previous.safetensors"},
+                },
+            }
+        )
+
+        self.assertEqual(
+            [
+                {
+                    "filename": "missing.safetensors",
+                    "repo_id": None,
+                    "local_path": "checkpoints",
+                }
+            ],
+            result,
+        )
 
 
 if __name__ == "__main__":

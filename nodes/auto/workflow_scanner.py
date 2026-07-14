@@ -13,6 +13,8 @@ def scan_workflow(prompt):
     for node_id, node in prompt.items():
         if not isinstance(node, dict):
             continue
+        if node.get("class_type") == "Auto Model Downloader":
+            continue
 
         inputs = node.get("inputs", {})
         for key, input_path in inputs.items():

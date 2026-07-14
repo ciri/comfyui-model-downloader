@@ -21,6 +21,14 @@ class DownloaderFrontendTests(unittest.TestCase):
         self.assertIn("output.links.push(linkId)", source)
         self.assertIn("setTimeout(() => synchronizeOutputLinks(this), 0)", source)
 
+    def test_auto_model_finder_uses_current_selection_keys(self):
+        source = (Path(__file__).parents[1] / "js" / "autodownloader.js").read_text()
+
+        self.assertIn("model.selection", source)
+        self.assertIn("!selections.includes(selectWidget.value)", source)
+        self.assertNotIn("this.triggerSlot(0)", source)
+        self.assertNotIn("getExtraProperties", source)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -47,9 +47,9 @@ Load the credential-free workflows in [`examples/workflows`](examples/workflows)
 
 ![Auto](assets/auto-downloader.png?raw=true)
 
-Automatically searches for known files (e.g., .safetensors, .ckpt, etc) files in your canvas and looks for repositories containing them on Hugging Face. Ideally, you should use this together with the HF Downloader node to automatically download any missing models.
+Scans the current workflow for missing known model files and looks for matching Hugging Face repositories. Connect its `repo_id`, `filename`, and `local_path` outputs directly to the HF Downloader.
 
-Troubleshooting: this node is experimental and may not work as expected. If it doesn't work, try removing the node and adding it again.
+When multiple models are missing, choose one from `select_model`. Choices include the ComfyUI model directory (for example, `checkpoints/model.safetensors`) so same-named files remain distinct. The scan runs on every queue; if a previously selected model is no longer missing, the node safely uses the first current match instead.
 
 ## Installation
 
@@ -78,7 +78,7 @@ To use the model downloader within your ComfyUI environment:
 Download destinations follow ComfyUI's model folder configuration, including directories marked as default in `extra_model_paths.yaml`.
 
 ## Roadmap (tentative)
-- [x] Add persistance for auto model finder between runs
+- [x] Add persistence for auto model finder between runs
 - [ ] Add more model finders (including CivitAI)
 - [ ] Add more downloaders
 - [x] Add authentication for HF Downloader
