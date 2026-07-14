@@ -1,7 +1,8 @@
 [project]
 name = "comfyui-model-downloader"
-description = ""
-version = "0.2"
+description = "Download Hugging Face and CivitAI models from ComfyUI workflows"
+version = "0.3.0"
+requires-python = ">=3.10"
 license = {file = "LICENSE"}
 
 [project.urls]

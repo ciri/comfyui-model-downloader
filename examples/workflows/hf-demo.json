@@ -1,0 +1,174 @@
+{
+  "last_node_id": 8,
+  "last_link_id": 10,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "HF Downloader",
+      "pos": [40, 80],
+      "size": [390, 130],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "repo_id", "type": "STRING", "widget": {"name": "repo_id"}, "link": null},
+        {"name": "filename", "type": "STRING", "widget": {"name": "filename"}, "link": null},
+        {"name": "local_path", "type": "COMBO", "widget": {"name": "local_path"}, "link": null},
+        {"name": "overwrite", "type": "BOOLEAN", "widget": {"name": "overwrite"}, "link": null},
+        {"name": "local_path_override", "type": "STRING", "widget": {"name": "local_path_override"}, "link": null},
+        {"name": "hf_token", "type": "STRING", "widget": {"name": "hf_token"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "filename", "type": "STRING", "links": [1]}
+      ],
+      "properties": {"Node name for S&R": "HF Downloader"},
+      "widgets_values": ["ehristoforu/stable-diffusion-v1-5-tiny", "sd-v1-5-tiny.safetensors", "checkpoints", false, "", ""]
+    },
+    {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [480, 60],
+      "size": [360, 130],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "text", "type": "STRING", "widget": {"name": "text"}, "link": null},
+        {"name": "clip", "type": "CLIP", "link": 3}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6]}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["a tiny red square"]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [480, 230],
+      "size": [360, 130],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "text", "type": "STRING", "widget": {"name": "text"}, "link": null},
+        {"name": "clip", "type": "CLIP", "link": 4}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [7]}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": [""]
+    },
+    {
+      "id": 4,
+      "type": "EmptyLatentImage",
+      "pos": [480, 410],
+      "size": [300, 110],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "width", "type": "INT", "widget": {"name": "width"}, "link": null},
+        {"name": "height", "type": "INT", "widget": {"name": "height"}, "link": null},
+        {"name": "batch_size", "type": "INT", "widget": {"name": "batch_size"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [5]}
+      ],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [512, 512, 1]
+    },
+    {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [900, 160],
+      "size": [330, 300],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 2},
+        {"name": "seed", "type": "INT", "widget": {"name": "seed"}, "link": null},
+        {"name": "steps", "type": "INT", "widget": {"name": "steps"}, "link": null},
+        {"name": "cfg", "type": "FLOAT", "widget": {"name": "cfg"}, "link": null},
+        {"name": "sampler_name", "type": "COMBO", "widget": {"name": "sampler_name"}, "link": null},
+        {"name": "scheduler", "type": "COMBO", "widget": {"name": "scheduler"}, "link": null},
+        {"name": "positive", "type": "CONDITIONING", "link": 6},
+        {"name": "negative", "type": "CONDITIONING", "link": 7},
+        {"name": "latent_image", "type": "LATENT", "link": 5},
+        {"name": "denoise", "type": "FLOAT", "widget": {"name": "denoise"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [8]}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [433342518721672, "randomize", 20, 20.0, "euler", "exponential", 1.0]
+    },
+    {
+      "id": 6,
+      "type": "VAEDecode",
+      "pos": [1280, 200],
+      "size": [210, 60],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 8},
+        {"name": "vae", "type": "VAE", "link": 9}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [10]}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"}
+    },
+    {
+      "id": 7,
+      "type": "PreviewImage",
+      "pos": [1540, 200],
+      "size": [220, 60],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 10}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewImage"}
+    },
+    {
+      "id": 8,
+      "type": "Downloaded Checkpoint Loader",
+      "pos": [460, 500],
+      "size": [350, 100],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "filename", "type": "STRING", "widget": {"name": "filename"}, "link": 1}
+      ],
+      "outputs": [
+        {"name": "model", "type": "MODEL", "links": [2]},
+        {"name": "clip", "type": "CLIP", "links": [3, 4]},
+        {"name": "vae", "type": "VAE", "links": [9]}
+      ],
+      "properties": {"Node name for S&R": "Downloaded Checkpoint Loader"}
+    }
+  ],
+  "links": [
+    [1, 1, 0, 8, 0, "STRING"],
+    [2, 8, 0, 5, 0, "MODEL"],
+    [3, 8, 1, 2, 1, "CLIP"],
+    [4, 8, 1, 3, 1, "CLIP"],
+    [5, 4, 0, 5, 8, "LATENT"],
+    [6, 2, 0, 5, 6, "CONDITIONING"],
+    [7, 3, 0, 5, 7, "CONDITIONING"],
+    [8, 5, 0, 6, 0, "LATENT"],
+    [9, 8, 2, 6, 1, "VAE"],
+    [10, 6, 0, 7, 0, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"frontendVersion": "1.28.8"},
+  "version": 0.4
+}

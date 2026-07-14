@@ -1,15 +1,18 @@
 from .nodes.auto.downloader import AutoModelDownloader
 from .nodes.cai.cai_download import CivitAIDownloader
+from .nodes.checkpoint_loader import DownloadedCheckpointLoader
 from .nodes.hf.hf_download import HFDownloader
 
 NODE_CLASS_MAPPINGS = {
     "HF Downloader": HFDownloader,
+    "Downloaded Checkpoint Loader": DownloadedCheckpointLoader,
     "Auto Model Downloader": AutoModelDownloader,
     "CivitAI Downloader": CivitAIDownloader,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "HF Downloader": "HF Download",
+    "Downloaded Checkpoint Loader": "Load Downloaded Checkpoint",
     "Auto Model Downloader": "Auto Model Finder (Experimental)",
     "CivitAI Downloader": "CivitAI Download",
 }

@@ -1,0 +1,114 @@
+{
+  "last_node_id": 6,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [80, 80],
+      "size": [300, 60],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "ckpt_name", "type": "COMBO", "widget": {"name": "ckpt_name"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": null},
+        {"name": "CLIP", "type": "CLIP", "links": null},
+        {"name": "VAE", "type": "VAE", "links": null}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["sd-v1-5-tiny.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "Auto Model Downloader",
+      "pos": [80, 210],
+      "size": [300, 90],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "select_model", "type": "COMBO", "widget": {"name": "select_model"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "repo_id", "type": "STRING", "links": [1]},
+        {"name": "filename", "type": "STRING", "links": [2]},
+        {"name": "local_path", "type": "STRING", "links": [3]}
+      ],
+      "properties": {"Node name for S&R": "Auto Model Downloader"},
+      "widgets_values": ["Scan First"]
+    },
+    {
+      "id": 3,
+      "type": "PreviewAny",
+      "pos": [500, 120],
+      "size": [260, 80],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 1}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 4,
+      "type": "PreviewAny",
+      "pos": [500, 220],
+      "size": [260, 80],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 2}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 5,
+      "type": "PreviewAny",
+      "pos": [500, 320],
+      "size": [260, 80],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 3}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 6,
+      "type": "CheckpointLoaderSimple",
+      "pos": [80, 410],
+      "size": [300, 60],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "ckpt_name", "type": "COMBO", "widget": {"name": "ckpt_name"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": null},
+        {"name": "CLIP", "type": "CLIP", "links": null},
+        {"name": "VAE", "type": "VAE", "links": null}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["sd-v1-5-inpainting-tiny.safetensors"]
+    }
+  ],
+  "links": [
+    [1, 2, 0, 3, 0, "STRING"],
+    [2, 2, 1, 4, 0, "STRING"],
+    [3, 2, 2, 5, 0, "STRING"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"frontendVersion": "1.28.8"},
+  "version": 0.4
+}

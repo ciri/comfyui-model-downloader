@@ -1,9 +1,9 @@
-import aiohttp
 import re
+import requests
 
 _model_cache = {}
 
-async def search_for_model(filename):
+def search_for_model(filename):
     # Check cache first
     cache_key = filename.lower()
     if cache_key in _model_cache:
@@ -39,24 +39,37 @@ async def search_for_model(filename):
     if components["core_name"]:
         if components["version"]:
             search_queries.append(f"{components['core_name']}_{components['version']}")
+        if components["core_name"].lower() == "sd":
+            alpha_tags = [tag for tag in components["tags"] if tag.isalpha()]
+            if alpha_tags:
+                search_queries.append(f"stable-diffusion-{alpha_tags[-1]}")
         search_queries.append(components["core_name"])
-    search_queries.append("_".join([components["core_name"], *components["tags"]]))
+    combined_query = "_".join(
+        part for part in [components["core_name"], *components["tags"]] if part
+    )
+    if combined_query:
+        search_queries.append(combined_query)
 
-    async with aiohttp.ClientSession() as session:
-        for query in search_queries:
-            async with session.get(f"{base_url}?full=true&search={query}") as response:
-                if response.status == 200:
-                    repos = await response.json()
-                    if repos:
-                        for repo in repos:
-                            match = next(
-                                (sibling for sibling in repo.get("siblings", []) if sibling["rfilename"] == filename),
-                                None
-                            )
-                            if match:
-                                result = {"repo_id": repo["modelId"], "filename": filename}
-                                # Cache the result
-                                _model_cache[cache_key] = result
-                                return result
+    for query in dict.fromkeys(search_queries):
+        response = requests.get(
+            base_url,
+            params={"full": "true", "search": query},
+        )
+        if response.status_code == 200:
+            repos = response.json()
+            if repos:
+                for repo in repos:
+                    match = next(
+                        (
+                            sibling
+                            for sibling in repo.get("siblings", [])
+                            if sibling["rfilename"] == filename
+                        ),
+                        None,
+                    )
+                    if match:
+                        result = {"repo_id": repo["modelId"], "filename": filename}
+                        _model_cache[cache_key] = result
+                        return result
     _model_cache[cache_key] = None
     return None

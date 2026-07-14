@@ -1,8 +1,8 @@
-from .utils import get_model_path
+from .utils import check_model_exists
 from .constants import EXTENSION_MAP
 import os
 
-async def scan_workflow(prompt):
+def scan_workflow(prompt):
     print(f"[Scannner] Scanning workflow.")
     if not prompt:
         print("No workflow found")
@@ -12,6 +12,8 @@ async def scan_workflow(prompt):
 
     for node_id, node in prompt.items():
         if not isinstance(node, dict):
+            continue
+        if node.get("class_type") == "Auto Model Downloader":
             continue
 
         inputs = node.get("inputs", {})
@@ -37,6 +39,9 @@ async def scan_workflow(prompt):
                 local_path = EXTENSION_MAP.get(file_extension)
                 if not local_path:
                     continue
+
+            if check_model_exists(filename, local_path):
+                continue
 
             missing_models.append({
                 "filename": filename,  # JUST the filename

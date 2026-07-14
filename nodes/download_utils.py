@@ -6,8 +6,15 @@ import shutil
 
 class DownloadManager:
     @staticmethod
-    def download_with_progress(url, save_path, progress_callback=None, params=None, chunk_size=1024*1024):
-        response = requests.get(url, stream=True, params=params)
+    def download_with_progress(
+        url,
+        save_path,
+        progress_callback=None,
+        params=None,
+        headers=None,
+        chunk_size=1024 * 1024,
+    ):
+        response = requests.get(url, stream=True, params=params, headers=headers)
         response.raise_for_status()
         
         total_size = int(response.headers.get('content-length', 0))
@@ -45,4 +52,4 @@ class DownloadManager:
             filenames = re.findall('filename="(.+)"', cd)
             if filenames:
                 return filenames[0]
-        return url.split("/")[-1] 
+        return url.split("/")[-1]
