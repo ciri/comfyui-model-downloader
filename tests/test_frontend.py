@@ -13,6 +13,14 @@ class DownloaderFrontendTests(unittest.TestCase):
         self.assertIn("Math.min(1, Math.max(0, value / maximum))", source)
         self.assertNotIn("ctx.fillText(this.title", source)
 
+    def test_auto_model_finder_restores_output_links_after_loading(self):
+        source = (Path(__file__).parents[1] / "js" / "autodownloader.js").read_text()
+
+        self.assertIn("const synchronizeOutputLinks", source)
+        self.assertIn("output.links = []", source)
+        self.assertIn("output.links.push(linkId)", source)
+        self.assertIn("setTimeout(() => synchronizeOutputLinks(this), 0)", source)
+
 
 if __name__ == "__main__":
     unittest.main()

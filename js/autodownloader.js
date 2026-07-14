@@ -48,6 +48,33 @@ app.registerExtension({
     },
     async beforeRegisterNodeDef(nodeType, nodeData, app)  {
         if (nodeType.comfyClass == "Auto Model Downloader") {
+            const synchronizeOutputLinks = (node) => {
+                const graphLinks = node.graph?.links;
+                if (!graphLinks) return;
+
+                for (const output of node.outputs ?? []) {
+                    output.links = [];
+                }
+
+                const links = graphLinks instanceof Map
+                    ? graphLinks.values()
+                    : Object.values(graphLinks);
+
+                for (const link of links) {
+                    const linkId = Array.isArray(link) ? link[0] : link.id;
+                    const originId = Array.isArray(link) ? link[1] : link.origin_id;
+                    const originSlot = Array.isArray(link) ? link[2] : link.origin_slot;
+                    if (String(originId) !== String(node.id)) continue;
+
+                    const output = node.outputs?.[originSlot];
+                    if (output && !output.links.includes(linkId)) {
+                        output.links.push(linkId);
+                    }
+                }
+
+                node.setDirtyCanvas(true);
+            };
+
             // Add missing_models to the properties that should be serialized
             const originalGetExtraProperties = nodeType.prototype.getExtraProperties;
             nodeType.prototype.getExtraProperties = function() {
@@ -92,6 +119,8 @@ app.registerExtension({
                         this.setDirtyCanvas(true);
                     }
                 }
+
+                setTimeout(() => synchronizeOutputLinks(this), 0);
             };
 
             // Remove onConfigure as it's redundant with configure
