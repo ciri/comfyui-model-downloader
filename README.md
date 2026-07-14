@@ -1,6 +1,19 @@
 # Model Downloader for ComfyUI
 
 <div align="center">
+    <a href="https://www.python.org/">
+        <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python 3.10+">
+    </a>
+    <a href="https://github.com/comfyanonymous/ComfyUI">
+        <img src="https://img.shields.io/badge/ComfyUI-Custom%20Node-5C5CDB" alt="ComfyUI custom node">
+    </a>
+    <a href="LICENSE">
+        <img src="https://img.shields.io/badge/License-AGPL--3.0-blue" alt="AGPL-3.0 license">
+    </a>
+    <img src="https://img.shields.io/badge/Version-0.3.0-informational" alt="Version 0.3.0">
+</div>
+
+<div align="center">
     <picture>
         <source media="(prefers-color-scheme: light)" srcset="https://github.com/ciri/comfyui-model-downloader/blob/main/assets/logo.svg?raw=true">
     </picture>
@@ -8,7 +21,7 @@
 
 
 ## Introduction
-This project provides an experimental model downloader node for ComfyUI, designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
+This project provides a model downloader node for ComfyUI, designed to simplify the process of downloading and managing models in environments with restricted access or complex setup requirements. It aims to enhance the flexibility and usability of ComfyUI by enabling seamless integration and management of machine learning models.
 
 ## Features
 - **Easy Model Downloading**: Simplify the process of downloading models directly within the ComfyUI environment.
