@@ -46,6 +46,14 @@ class CivitAIDownloaderTests(unittest.TestCase):
             result,
         )
 
+    def test_api_key_input_is_optional_and_masked(self):
+        with patch.object(self.module, "get_model_dirs", return_value=["checkpoints"]):
+            api_key_input = self.module.CivitAIDownloader.INPUT_TYPES()["required"]["api_key"]
+
+        self.assertEqual("STRING", api_key_input[0])
+        self.assertEqual("", api_key_input[1]["default"])
+        self.assertTrue(api_key_input[1]["password"])
+
     def test_latest_version_filename_and_url_are_discovered(self):
         response = Mock(status_code=200)
         response.json.return_value = {
@@ -102,6 +110,20 @@ class CivitAIDownloaderTests(unittest.TestCase):
 
         self.assertEqual(("selected.bin", "https://selected"), result)
 
+    def test_public_metadata_request_omits_authorization(self):
+        response = Mock(status_code=200)
+        response.json.return_value = {
+            "modelVersions": [{"id": 100, "createdAt": "2025-01-01T00:00:00Z", "files": [{"name": "model.bin", "downloadUrl": "https://download"}]}]
+        }
+
+        with patch.object(self.module.requests, "get", return_value=response) as request:
+            self.module.CivitAIDownloader().get_download_filename_url("123", "", "")
+
+        request.assert_called_once_with(
+            "https://civitai.com/api/v1/models/123",
+            headers=None,
+        )
+
     def test_download_uses_discovered_filename(self):
         downloader = self.module.CivitAIDownloader()
 
@@ -127,6 +149,23 @@ class CivitAIDownloaderTests(unittest.TestCase):
             handle_download.call_args.kwargs["filename"],
         )
         self.assertEqual("https://download", handle_download.call_args.kwargs["url"])
+        self.assertEqual({"token": "token"}, handle_download.call_args.kwargs["params"])
+
+    def test_download_omits_token_parameter_without_api_key(self):
+        downloader = self.module.CivitAIDownloader()
+
+        with patch.object(
+            downloader,
+            "get_download_filename_url",
+            return_value=("model.safetensors", "https://download"),
+        ), patch.object(
+            downloader,
+            "prepare_download_path",
+            return_value="/models/checkpoints",
+        ), patch.object(downloader, "handle_download", return_value={} ) as handle_download:
+            downloader.download("123", "", "", "checkpoints", "node-1")
+
+        self.assertIsNone(handle_download.call_args.kwargs["params"])
 
     def test_missing_versions_raise_clear_error(self):
         response = Mock(status_code=200)

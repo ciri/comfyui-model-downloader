@@ -11,7 +11,7 @@ class CivitAIDownloader(BaseModelDownloader):
             "required": {       
                 "model_id": ("STRING", {"multiline": False, "default": "360292"}),
                 "version_id": ("STRING", {"multiline": False, "default": "", "placeholder": "Leave empty for latest version"}),
-                "token_id": ("STRING", {"multiline": False, "default": "API_token_here"}),
+                "api_key": ("STRING", {"multiline": False, "default": "", "password": True, "tooltip": "Optional CivitAI API key"}),
                 "save_dir": (get_model_dirs(),),
             },
             "hidden": {
@@ -21,13 +21,14 @@ class CivitAIDownloader(BaseModelDownloader):
         
     FUNCTION = "download"
     
-    def get_download_filename_url(self, model_id, version_id, token_id):
+    def get_download_filename_url(self, model_id, version_id, api_key):
         """ Find the model filename and URL from the CivitAI API
             If version_id is provided, download that specific version
             Otherwise, download the latest version
         """
         model_details_url = f'{self.base_url}/v1/models/{model_id}'
-        response = requests.get(model_details_url, headers={"Authorization": f"Bearer {token_id}"})
+        headers = {"Authorization": f"Bearer {api_key}"} if api_key else None
+        response = requests.get(model_details_url, headers=headers)
         
         if response.status_code != 200:
             raise Exception(f"Failed to fetch model details. Status code: {response.status_code}")
@@ -68,9 +69,9 @@ class CivitAIDownloader(BaseModelDownloader):
             url = files[0]['downloadUrl']
             return filename, url
     
-    def download(self, model_id, version_id, token_id, save_dir, node_id):
+    def download(self, model_id, version_id, api_key, save_dir, node_id):
         self.node_id = node_id
-        filename, url = self.get_download_filename_url(model_id, version_id, token_id)
+        filename, url = self.get_download_filename_url(model_id, version_id, api_key)
         save_path = self.prepare_download_path(save_dir, filename)
         
         return self.handle_download(
@@ -79,5 +80,5 @@ class CivitAIDownloader(BaseModelDownloader):
             save_path=save_path,
             filename=filename,
             progress_callback=self,
-            params={'token': token_id}
+            params={"token": api_key} if api_key else None,
         )
