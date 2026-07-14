@@ -11,6 +11,7 @@ class DownloaderFrontendTests(unittest.TestCase):
         self.assertIn("ctx.rect(0, -titleHeight, titleWidth, titleHeight)", source)
         self.assertIn("ctx.fillRect(0, -titleHeight, titleWidth * progress, titleHeight)", source)
         self.assertIn("Math.min(1, Math.max(0, value / maximum))", source)
+        self.assertNotIn("ctx.fillText(this.title", source)
 
 
 if __name__ == "__main__":

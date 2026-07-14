@@ -17,10 +17,19 @@ app.registerExtension({
             // Override the title drawing
             origNode.prototype.onDrawTitleBar = function(ctx, titleHeight, size, scale, foregroundColor) {
                 const titleWidth = Math.max(0, size[0]);
+                const radius = LiteGraph.ROUND_RADIUS;
 
                 ctx.save();
                 ctx.fillStyle = this.color || foregroundColor;
-                ctx.fillRect(0, -titleHeight, titleWidth, titleHeight);
+                ctx.beginPath();
+                ctx.roundRect(
+                    0,
+                    -titleHeight,
+                    titleWidth,
+                    titleHeight,
+                    this.collapsed ? [radius] : [radius, radius, 0, 0],
+                );
+                ctx.fill();
 
                 if (Number.isFinite(this.progress)) {
                     const progress = Math.min(1, Math.max(0, this.progress));
@@ -31,10 +40,6 @@ app.registerExtension({
                     ctx.fillRect(0, -titleHeight, titleWidth * progress, titleHeight);
                 }
 
-                ctx.fillStyle = this.title_text_color || LiteGraph.NODE_TITLE_COLOR;
-                ctx.font = `${LiteGraph.NODE_TEXT_SIZE}px Arial`;
-                ctx.textAlign = "left";
-                ctx.fillText(this.title, 4, -titleHeight * 0.3);
                 ctx.restore();
             };
 
