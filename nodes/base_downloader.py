@@ -13,7 +13,8 @@ def get_model_dirs():
     )
 
 class BaseModelDownloader:
-    RETURN_TYPES = ()
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("filename",)
     OUTPUT_NODE = True
     CATEGORY = "loaders"
 
@@ -51,12 +52,12 @@ class BaseModelDownloader:
             file_path = os.path.join(save_path, filename)
             if os.path.exists(file_path) and not overwrite:
                 print(f"File already exists and overwrite is False: {file_path}")
-                return {}
+                return (filename,)
 
             kwargs['save_path'] = save_path
-            download_func(**kwargs)
+            downloaded_path = download_func(**kwargs)
             self.update_status("Complete!", 100)
-            return {}
+            return (os.path.basename(downloaded_path),)
         except Exception as e:
             print(f"Error occurred: {str(e)}")
             raise e

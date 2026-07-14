@@ -27,6 +27,7 @@ Parameters:
 * save_dir: destination directory
 * overwrite: overwrite existing file if it exists
 * hf_token: optional Hugging Face access token for gated or private repositories
+* filename output: downloaded filename, for connecting to string-compatible nodes
 
 ### CivitAI Downloader
 ![CivitAI|250](assets/civitai-downloader.png?raw=true)
@@ -36,6 +37,7 @@ Parameters:
 * version_id: CivitAI model version ID
 * api_key: optional CivitAI API key
 * save_dir: destination directory
+* filename output: downloaded filename, for connecting to string-compatible nodes
 
 ## Tiny test workflows
 

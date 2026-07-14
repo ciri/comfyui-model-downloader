@@ -1,6 +1,6 @@
 {
-  "last_node_id": 2,
-  "last_link_id": 0,
+  "last_node_id": 3,
+  "last_link_id": 1,
   "nodes": [
     {
       "id": 1,
@@ -33,15 +33,31 @@
         {"name": "select_model", "type": "COMBO", "widget": {"name": "select_model"}, "link": null}
       ],
       "outputs": [
-        {"name": "repo_id", "type": "STRING", "links": null},
+        {"name": "repo_id", "type": "STRING", "links": [1]},
         {"name": "filename", "type": "STRING", "links": null},
         {"name": "local_path", "type": "STRING", "links": null}
       ],
       "properties": {"Node name for S&R": "Auto Model Downloader"},
       "widgets_values": ["Scan First"]
+    },
+    {
+      "id": 3,
+      "type": "PreviewAny",
+      "pos": [500, 220],
+      "size": [260, 80],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 1}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
     }
   ],
-  "links": [],
+  "links": [
+    [1, 2, 0, 3, 0, "STRING"]
+  ],
   "groups": [],
   "config": {},
   "extra": {"frontendVersion": "1.28.8"},

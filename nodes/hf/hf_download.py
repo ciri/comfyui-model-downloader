@@ -35,7 +35,7 @@ class HFDownloader(BaseModelDownloader):
     ):
         if not repo_id or not filename:
             print(f"Missing required values: repo_id='{repo_id}', filename='{filename}'")
-            return {}
+            return ("",)
         
         final_path = local_path_override if local_path_override else local_path
         

@@ -19,6 +19,7 @@ class WorkflowExampleTests(unittest.TestCase):
             ["hf-internal-testing/tiny-random-bert", "model.safetensors"],
             node["widgets_values"][:2],
         )
+        self.assertEqual([[1, 1, 0, 2, 0, "STRING"]], workflow["links"])
 
     def test_civitai_workflow_pins_public_tiny_file_without_key(self):
         workflow = self.load_workflow("civitai-tiny-download.json")
@@ -26,6 +27,7 @@ class WorkflowExampleTests(unittest.TestCase):
 
         self.assertEqual("CivitAI Downloader", node["type"])
         self.assertEqual(["723360", "1047814", ""], node["widgets_values"][:3])
+        self.assertEqual([[1, 1, 0, 2, 0, "STRING"]], workflow["links"])
 
     def test_auto_model_finder_workflow_is_scan_only(self):
         workflow = self.load_workflow("auto-model-finder-scan.json")
@@ -34,4 +36,5 @@ class WorkflowExampleTests(unittest.TestCase):
         self.assertEqual("CheckpointLoaderSimple", nodes[1]["type"])
         self.assertEqual(["model.safetensors"], nodes[1]["widgets_values"])
         self.assertEqual("Auto Model Downloader", nodes[2]["type"])
-        self.assertEqual([], workflow["links"])
+        self.assertEqual("PreviewAny", nodes[3]["type"])
+        self.assertEqual([[1, 2, 0, 3, 0, "STRING"]], workflow["links"])

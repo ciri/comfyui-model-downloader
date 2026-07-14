@@ -56,6 +56,28 @@ class HFDownloaderTests(unittest.TestCase):
 
         self.assertIsNone(handle_download.call_args.kwargs["headers"])
 
+    def test_downloader_exposes_filename_output(self):
+        self.assertEqual(("STRING",), self.module.HFDownloader.RETURN_TYPES)
+        self.assertEqual(("filename",), self.module.HFDownloader.RETURN_NAMES)
+
+    def test_completed_download_returns_saved_filename(self):
+        downloader = self.module.HFDownloader()
+
+        with tempfile.TemporaryDirectory() as directory:
+            downloaded_path = Path(directory) / "model.safetensors"
+            with patch.object(
+                self.module.DownloadManager,
+                "download_with_progress",
+                return_value=str(downloaded_path),
+            ):
+                result = downloader.handle_download(
+                    self.module.DownloadManager.download_with_progress,
+                    save_path=directory,
+                    filename="requested.safetensors",
+                )
+
+        self.assertEqual(("model.safetensors",), result)
+
 
 class DownloadManagerHeaderTests(unittest.TestCase):
     @classmethod
