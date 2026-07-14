@@ -44,6 +44,9 @@ class WorkflowExampleTests(unittest.TestCase):
         nodes = {node["id"]: node for node in workflow["nodes"]}
 
         self.assertEqual("HF Downloader", nodes[1]["type"])
+        self.assertEqual("Downloaded Checkpoint Loader", nodes[8]["type"])
         self.assertEqual("KSampler", nodes[5]["type"])
+        self.assertEqual([1, 1, 0.0, "euler", "simple", 1.0], nodes[5]["widgets_values"])
         self.assertEqual("PreviewImage", nodes[7]["type"])
-        self.assertIn([9, 6, 0, 7, 0, "IMAGE"], workflow["links"])
+        self.assertIn([1, 1, 0, 8, 0, "STRING"], workflow["links"])
+        self.assertIn([10, 6, 0, 7, 0, "IMAGE"], workflow["links"])

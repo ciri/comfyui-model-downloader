@@ -1,7 +1,5 @@
 import importlib
-import sys
 import tempfile
-import types
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -38,7 +36,7 @@ class HFDownloaderTests(unittest.TestCase):
                 hf_token="secret-token",
             )
 
-        self.assertEqual(("flux1-dev.safetensors", None, None, None), result)
+        self.assertEqual(("flux1-dev.safetensors",), result)
         self.assertEqual(
             {"Authorization": "Bearer secret-token"},
             handle_download.call_args.kwargs["headers"],
@@ -60,11 +58,11 @@ class HFDownloaderTests(unittest.TestCase):
 
     def test_downloader_exposes_filename_output(self):
         self.assertEqual(
-            ("STRING", "MODEL", "CLIP", "VAE"),
+            ("STRING",),
             self.module.HFDownloader.RETURN_TYPES,
         )
         self.assertEqual(
-            ("filename", "model", "clip", "vae"),
+            ("filename",),
             self.module.HFDownloader.RETURN_NAMES,
         )
 
@@ -85,40 +83,6 @@ class HFDownloaderTests(unittest.TestCase):
                 )
 
         self.assertEqual(("model.safetensors",), result)
-
-    def test_downloader_loads_checkpoint_when_requested(self):
-        downloader = self.module.HFDownloader()
-        fake_model = object()
-        fake_clip = object()
-        fake_vae = object()
-        comfy_module = types.ModuleType("comfy")
-        comfy_sd_module = types.ModuleType("comfy.sd")
-        comfy_sd_module.load_checkpoint_guess_config = Mock(
-            return_value=(fake_model, fake_clip, fake_vae, object())
-        )
-        comfy_module.sd = comfy_sd_module
-
-        with patch.dict(sys.modules, {"comfy": comfy_module, "comfy.sd": comfy_sd_module}), \
-                patch.object(downloader, "prepare_download_path", return_value="/models/checkpoints"), \
-                patch.object(downloader, "handle_download", return_value=("tiny.safetensors",)), \
-                patch.object(self.module.folder_paths, "get_full_path_or_raise", return_value="/models/checkpoints/tiny.safetensors", create=True), \
-                patch.object(self.module.folder_paths, "get_folder_paths", return_value=["/models/embeddings"]):
-            result = downloader.download(
-                repo_id="owner/tiny",
-                filename="tiny.safetensors",
-                local_path="checkpoints",
-                node_id="node-1",
-                load_checkpoint=True,
-            )
-
-        self.assertEqual(("tiny.safetensors", fake_model, fake_clip, fake_vae), result)
-        comfy_sd_module.load_checkpoint_guess_config.assert_called_once_with(
-            "/models/checkpoints/tiny.safetensors",
-            output_vae=True,
-            output_clip=True,
-            embedding_directory=["/models/embeddings"],
-        )
-
 
 class DownloadManagerHeaderTests(unittest.TestCase):
     @classmethod

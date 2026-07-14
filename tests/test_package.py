@@ -10,6 +10,7 @@ class PackageSmokeTests(unittest.TestCase):
         self.assertEqual(
             {
                 "HF Downloader",
+                "Downloaded Checkpoint Loader",
                 "Auto Model Downloader",
                 "CivitAI Downloader",
             },
