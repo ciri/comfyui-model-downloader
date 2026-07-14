@@ -10,19 +10,8 @@ class WorkflowExampleTests(unittest.TestCase):
     def load_workflow(self, filename):
         return json.loads((WORKFLOWS_DIRECTORY / filename).read_text())
 
-    def test_huggingface_workflow_uses_small_public_model(self):
-        workflow = self.load_workflow("huggingface-tiny-download.json")
-        node = workflow["nodes"][0]
-
-        self.assertEqual("HF Downloader", node["type"])
-        self.assertEqual(
-            ["hf-internal-testing/tiny-random-bert", "model.safetensors"],
-            node["widgets_values"][:2],
-        )
-        self.assertEqual([[1, 1, 0, 2, 0, "STRING"]], workflow["links"])
-
-    def test_civitai_workflow_downloads_and_previews_an_image(self):
-        workflow = self.load_workflow("civitai-tiny-download.json")
+    def test_civitai_demo_downloads_and_previews_an_image(self):
+        workflow = self.load_workflow("civitai-demo.json")
         nodes = {node["id"]: node for node in workflow["nodes"]}
 
         self.assertEqual("CivitAI Downloader", nodes[1]["type"])
@@ -42,10 +31,19 @@ class WorkflowExampleTests(unittest.TestCase):
         self.assertEqual(["model.safetensors"], nodes[1]["widgets_values"])
         self.assertEqual("Auto Model Downloader", nodes[2]["type"])
         self.assertEqual("PreviewAny", nodes[3]["type"])
-        self.assertEqual([[1, 2, 0, 3, 0, "STRING"]], workflow["links"])
+        self.assertEqual("PreviewAny", nodes[4]["type"])
+        self.assertEqual("PreviewAny", nodes[5]["type"])
+        self.assertEqual(
+            [
+                [1, 2, 0, 3, 0, "STRING"],
+                [2, 2, 1, 4, 0, "STRING"],
+                [3, 2, 2, 5, 0, "STRING"],
+            ],
+            workflow["links"],
+        )
 
-    def test_checkpoint_workflow_downloads_and_previews_an_image(self):
-        workflow = self.load_workflow("hf-checkpoint-tiny-preview.json")
+    def test_huggingface_demo_downloads_and_previews_an_image(self):
+        workflow = self.load_workflow("hf-demo.json")
         nodes = {node["id"]: node for node in workflow["nodes"]}
 
         self.assertEqual("HF Downloader", nodes[1]["type"])

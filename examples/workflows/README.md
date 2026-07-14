@@ -4,20 +4,19 @@ These workflows are intentionally public and credential-free. Load one by draggi
 
 | Workflow | What it verifies | Download size |
 | --- | --- | --- |
-| `huggingface-tiny-download.json` | Hugging Face download, in-node progress, and returned filename | about 520 KB |
-| `civitai-tiny-download.json` | CivitAI checkpoint download, load, and image preview | about 2.0 GB |
 | `auto-model-finder-scan.json` | Workflow scan, Hugging Face lookup, and discovered repository | no download |
-| `hf-checkpoint-tiny-preview.json` | Checkpoint download, load, and 512×512 image preview | about 2.1 GB |
+| `civitai-demo.json` | CivitAI checkpoint download, load, and 512×512 image preview | about 2.0 GB |
+| `hf-demo.json` | Hugging Face checkpoint download, load, and 512×512 image preview | about 2.1 GB |
 
 ## Full image-generation smoke test
 
-`hf-checkpoint-tiny-preview.json` and `civitai-tiny-download.json` are complete, one-click ComfyUI graphs. Each downloader returns a filename to **Load Downloaded Checkpoint**, which loads the checkpoint's model, CLIP, and VAE before previewing a 512×512 image. They use 20 Euler/exponential steps with CFG 20 and denoise 1. The first run can take longer on CPU.
+`hf-demo.json` and `civitai-demo.json` are complete, one-click ComfyUI graphs. Each downloader returns a filename to **Load Downloaded Checkpoint**, which loads the checkpoint's model, CLIP, and VAE before previewing a 512×512 image. They use 20 Euler/exponential steps with CFG 20 and denoise 1. The first run can take longer on CPU.
 
 ## Run the auto-model-finder flow from scratch
 
-Before loading `auto-model-finder-scan.json`, delete `model.safetensors` from the selected `checkpoints` directory. The unconnected **Load Checkpoint** node is deliberate: it gives the model finder a missing filename to scan without attempting to load it. Queue the workflow, then confirm that the **Auto Model Finder** widget changes from `Scan First` to a discovered filename.
+Before loading `auto-model-finder-scan.json`, delete `model.safetensors` from the selected `checkpoints` directory. The unconnected **Load Checkpoint** node is deliberate: it gives the model finder a missing filename to scan without attempting to load it. Queue the workflow, then inspect the three previews: repository ID, filename, and target model path.
 
-The finder uses filename search, so the discovered repository may vary over time. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests. It only reports files that are absent from ComfyUI's configured model paths.
+The finder no longer has a free-text model-name input. It scans all model-like filenames in the workflow that are absent from ComfyUI's configured model paths, searches Hugging Face for each filename, and populates **select_model** with every resolved filename. Select one result to update the three outputs. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests.
 
 ## Loading a downloaded checkpoint
 

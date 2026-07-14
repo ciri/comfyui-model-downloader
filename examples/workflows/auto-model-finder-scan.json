@@ -1,6 +1,6 @@
 {
-  "last_node_id": 3,
-  "last_link_id": 1,
+  "last_node_id": 5,
+  "last_link_id": 3,
   "nodes": [
     {
       "id": 1,
@@ -43,7 +43,7 @@
     {
       "id": 3,
       "type": "PreviewAny",
-      "pos": [500, 220],
+      "pos": [500, 120],
       "size": [260, 80],
       "flags": {},
       "order": 2,
@@ -53,10 +53,40 @@
       ],
       "outputs": [],
       "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 4,
+      "type": "PreviewAny",
+      "pos": [500, 220],
+      "size": [260, 80],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 2}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 5,
+      "type": "PreviewAny",
+      "pos": [500, 320],
+      "size": [260, 80],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "source", "type": "*", "link": 3}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "PreviewAny"}
     }
   ],
   "links": [
-    [1, 2, 0, 3, 0, "STRING"]
+    [1, 2, 0, 3, 0, "STRING"],
+    [2, 2, 1, 4, 0, "STRING"],
+    [3, 2, 2, 5, 0, "STRING"]
   ],
   "groups": [],
   "config": {},
