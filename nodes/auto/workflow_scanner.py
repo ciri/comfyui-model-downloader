@@ -1,4 +1,4 @@
-from .utils import get_model_path
+from .utils import check_model_exists
 from .constants import EXTENSION_MAP
 import os
 
@@ -37,6 +37,9 @@ def scan_workflow(prompt):
                 local_path = EXTENSION_MAP.get(file_extension)
                 if not local_path:
                     continue
+
+            if check_model_exists(filename, local_path):
+                continue
 
             missing_models.append({
                 "filename": filename,  # JUST the filename

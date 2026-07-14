@@ -17,7 +17,7 @@ These workflows are intentionally public and credential-free. Load one by draggi
 
 Before loading `auto-model-finder-scan.json`, delete `model.safetensors` from the selected `checkpoints` directory. The unconnected **Load Checkpoint** node is deliberate: it gives the model finder a missing filename to scan without attempting to load it. Queue the workflow, then confirm that the **Auto Model Finder** widget changes from `Scan First` to a discovered filename.
 
-The finder uses a filename search, so the discovered repository may vary over time. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests.
+The finder uses filename search, so the discovered repository may vary over time. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests. It only reports files that are absent from ComfyUI's configured model paths.
 
 ## Loading a downloaded checkpoint
 

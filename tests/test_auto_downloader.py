@@ -121,6 +121,22 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
             result,
         )
 
+    def test_workflow_scanner_skips_models_that_exist(self):
+        scanner = importlib.import_module(
+            f"{PACKAGE_NAME}.nodes.auto.workflow_scanner"
+        )
+
+        with patch.object(scanner, "check_model_exists", return_value=True):
+            result = scanner.scan_workflow(
+                {
+                    "1": {
+                        "inputs": {"ckpt_name": "model.safetensors"},
+                    }
+                }
+            )
+
+        self.assertEqual([], result)
+
 
 if __name__ == "__main__":
     unittest.main()
