@@ -1,0 +1,29 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CivitAI Downloader",
+      "pos": [80, 80],
+      "size": [360, 170],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "model_id", "type": "STRING", "widget": {"name": "model_id"}, "link": null},
+        {"name": "version_id", "type": "STRING", "widget": {"name": "version_id"}, "link": null},
+        {"name": "api_key", "type": "STRING", "widget": {"name": "api_key"}, "link": null},
+        {"name": "save_dir", "type": "COMBO", "widget": {"name": "save_dir"}, "link": null}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "CivitAI Downloader"},
+      "widgets_values": ["723360", "1047814", "", "checkpoints"]
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {"frontendVersion": "1.28.8"},
+  "version": 0.4
+}

@@ -1,0 +1,31 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "HF Downloader",
+      "pos": [80, 80],
+      "size": [360, 170],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {"name": "repo_id", "type": "STRING", "widget": {"name": "repo_id"}, "link": null},
+        {"name": "filename", "type": "STRING", "widget": {"name": "filename"}, "link": null},
+        {"name": "local_path", "type": "COMBO", "widget": {"name": "local_path"}, "link": null},
+        {"name": "overwrite", "type": "BOOLEAN", "widget": {"name": "overwrite"}, "link": null},
+        {"name": "local_path_override", "type": "STRING", "widget": {"name": "local_path_override"}, "link": null},
+        {"name": "hf_token", "type": "STRING", "widget": {"name": "hf_token"}, "link": null}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "HF Downloader"},
+      "widgets_values": ["hf-internal-testing/tiny-random-bert", "model.safetensors", "checkpoints", true, "", ""]
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {"frontendVersion": "1.28.8"},
+  "version": 0.4
+}
