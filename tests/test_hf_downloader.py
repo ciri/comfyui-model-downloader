@@ -29,7 +29,7 @@ class HFDownloaderTests(unittest.TestCase):
         downloader = self.module.HFDownloader()
 
         with patch.object(downloader, "prepare_download_path", return_value="/models/checkpoints"), \
-                patch.object(downloader, "handle_download", return_value={}) as handle_download:
+                patch.object(downloader, "handle_download", return_value=("flux1-dev.safetensors",)) as handle_download:
             result = downloader.download(
                 repo_id="black-forest-labs/FLUX.1-dev",
                 filename="flux1-dev.safetensors",
@@ -38,7 +38,7 @@ class HFDownloaderTests(unittest.TestCase):
                 hf_token="secret-token",
             )
 
-        self.assertEqual({}, result)
+        self.assertEqual(("flux1-dev.safetensors", None, None, None), result)
         self.assertEqual(
             {"Authorization": "Bearer secret-token"},
             handle_download.call_args.kwargs["headers"],
@@ -48,7 +48,7 @@ class HFDownloaderTests(unittest.TestCase):
         downloader = self.module.HFDownloader()
 
         with patch.object(downloader, "prepare_download_path", return_value="/models/checkpoints"), \
-                patch.object(downloader, "handle_download", return_value={}) as handle_download:
+                patch.object(downloader, "handle_download", return_value=("model.safetensors",)) as handle_download:
             downloader.download(
                 repo_id="public/repository",
                 filename="model.safetensors",
@@ -59,8 +59,14 @@ class HFDownloaderTests(unittest.TestCase):
         self.assertIsNone(handle_download.call_args.kwargs["headers"])
 
     def test_downloader_exposes_filename_output(self):
-        self.assertEqual(("STRING",), self.module.HFDownloader.RETURN_TYPES)
-        self.assertEqual(("filename",), self.module.HFDownloader.RETURN_NAMES)
+        self.assertEqual(
+            ("STRING", "MODEL", "CLIP", "VAE"),
+            self.module.HFDownloader.RETURN_TYPES,
+        )
+        self.assertEqual(
+            ("filename", "model", "clip", "vae"),
+            self.module.HFDownloader.RETURN_NAMES,
+        )
 
     def test_completed_download_returns_saved_filename(self):
         downloader = self.module.HFDownloader()
@@ -80,8 +86,8 @@ class HFDownloaderTests(unittest.TestCase):
 
         self.assertEqual(("model.safetensors",), result)
 
-    def test_checkpoint_downloader_loads_downloaded_checkpoint(self):
-        downloader = self.module.HFCheckpointDownloader()
+    def test_downloader_loads_checkpoint_when_requested(self):
+        downloader = self.module.HFDownloader()
         fake_model = object()
         fake_clip = object()
         fake_vae = object()
@@ -97,13 +103,15 @@ class HFDownloaderTests(unittest.TestCase):
                 patch.object(downloader, "handle_download", return_value=("tiny.safetensors",)), \
                 patch.object(self.module.folder_paths, "get_full_path_or_raise", return_value="/models/checkpoints/tiny.safetensors", create=True), \
                 patch.object(self.module.folder_paths, "get_folder_paths", return_value=["/models/embeddings"]):
-            result = downloader.download_and_load(
+            result = downloader.download(
                 repo_id="owner/tiny",
                 filename="tiny.safetensors",
+                local_path="checkpoints",
                 node_id="node-1",
+                load_checkpoint=True,
             )
 
-        self.assertEqual((fake_model, fake_clip, fake_vae), result)
+        self.assertEqual(("tiny.safetensors", fake_model, fake_clip, fake_vae), result)
         comfy_sd_module.load_checkpoint_guess_config.assert_called_once_with(
             "/models/checkpoints/tiny.safetensors",
             output_vae=True,

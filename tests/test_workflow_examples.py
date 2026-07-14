@@ -43,7 +43,7 @@ class WorkflowExampleTests(unittest.TestCase):
         workflow = self.load_workflow("hf-checkpoint-tiny-preview.json")
         nodes = {node["id"]: node for node in workflow["nodes"]}
 
-        self.assertEqual("HF Checkpoint Downloader", nodes[1]["type"])
+        self.assertEqual("HF Downloader", nodes[1]["type"])
         self.assertEqual("KSampler", nodes[5]["type"])
         self.assertEqual("PreviewImage", nodes[7]["type"])
         self.assertIn([9, 6, 0, 7, 0, "IMAGE"], workflow["links"])

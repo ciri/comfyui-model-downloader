@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": 1,
-      "type": "HF Checkpoint Downloader",
+      "type": "HF Downloader",
       "pos": [40, 80],
       "size": [390, 130],
       "flags": {},
@@ -13,16 +13,20 @@
       "inputs": [
         {"name": "repo_id", "type": "STRING", "widget": {"name": "repo_id"}, "link": null},
         {"name": "filename", "type": "STRING", "widget": {"name": "filename"}, "link": null},
+        {"name": "local_path", "type": "COMBO", "widget": {"name": "local_path"}, "link": null},
         {"name": "overwrite", "type": "BOOLEAN", "widget": {"name": "overwrite"}, "link": null},
-        {"name": "hf_token", "type": "STRING", "widget": {"name": "hf_token"}, "link": null}
+        {"name": "local_path_override", "type": "STRING", "widget": {"name": "local_path_override"}, "link": null},
+        {"name": "hf_token", "type": "STRING", "widget": {"name": "hf_token"}, "link": null},
+        {"name": "load_checkpoint", "type": "BOOLEAN", "widget": {"name": "load_checkpoint"}, "link": null}
       ],
       "outputs": [
+        {"name": "filename", "type": "STRING", "links": null},
         {"name": "model", "type": "MODEL", "links": [1]},
         {"name": "clip", "type": "CLIP", "links": [2, 3]},
         {"name": "vae", "type": "VAE", "links": [8]}
       ],
-      "properties": {"Node name for S&R": "HF Checkpoint Downloader"},
-      "widgets_values": ["ehristoforu/stable-diffusion-v1-5-tiny", "sd-v1-5-tiny.safetensors", false, ""]
+      "properties": {"Node name for S&R": "HF Downloader"},
+      "widgets_values": ["ehristoforu/stable-diffusion-v1-5-tiny", "sd-v1-5-tiny.safetensors", "checkpoints", false, "", "", true]
     },
     {
       "id": 2,
@@ -138,14 +142,14 @@
     }
   ],
   "links": [
-    [1, 1, 0, 5, 0, "MODEL"],
-    [2, 1, 1, 2, 1, "CLIP"],
-    [3, 1, 1, 3, 1, "CLIP"],
+    [1, 1, 1, 5, 0, "MODEL"],
+    [2, 1, 2, 2, 1, "CLIP"],
+    [3, 1, 2, 3, 1, "CLIP"],
     [4, 4, 0, 5, 8, "LATENT"],
     [5, 2, 0, 5, 6, "CONDITIONING"],
     [6, 3, 0, 5, 7, "CONDITIONING"],
     [7, 5, 0, 6, 0, "LATENT"],
-    [8, 1, 2, 6, 1, "VAE"],
+    [8, 1, 3, 6, 1, "VAE"],
     [9, 6, 0, 7, 0, "IMAGE"]
   ],
   "groups": [],
