@@ -38,3 +38,12 @@ class WorkflowExampleTests(unittest.TestCase):
         self.assertEqual("Auto Model Downloader", nodes[2]["type"])
         self.assertEqual("PreviewAny", nodes[3]["type"])
         self.assertEqual([[1, 2, 0, 3, 0, "STRING"]], workflow["links"])
+
+    def test_checkpoint_workflow_downloads_and_previews_an_image(self):
+        workflow = self.load_workflow("hf-checkpoint-tiny-preview.json")
+        nodes = {node["id"]: node for node in workflow["nodes"]}
+
+        self.assertEqual("HF Checkpoint Downloader", nodes[1]["type"])
+        self.assertEqual("KSampler", nodes[5]["type"])
+        self.assertEqual("PreviewImage", nodes[7]["type"])
+        self.assertIn([9, 6, 0, 7, 0, "IMAGE"], workflow["links"])

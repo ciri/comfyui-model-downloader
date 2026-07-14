@@ -7,6 +7,11 @@ These workflows are intentionally small, public, and credential-free. Load one b
 | `huggingface-tiny-download.json` | Hugging Face download, in-node progress, and returned filename | about 520 KB |
 | `civitai-tiny-download.json` | CivitAI metadata lookup, download, public access, and returned filename | about 250 bytes |
 | `auto-model-finder-scan.json` | Workflow scan, Hugging Face lookup, and discovered repository | no download |
+| `hf-checkpoint-tiny-preview.json` | Checkpoint download, load, and 64×64 image preview | about 2.1 GB |
+
+## Full image-generation smoke test
+
+`hf-checkpoint-tiny-preview.json` is a complete, one-click ComfyUI graph. It downloads a public Stable Diffusion 1.5-compatible checkpoint, loads its model, CLIP, and VAE outputs, then previews a one-step 64×64 image in the UI. It works with CPU mode, but the first run downloads about 2.1 GB and can take longer on CPU.
 
 ## Run the auto-model-finder flow from scratch
 

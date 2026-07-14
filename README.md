@@ -41,7 +41,7 @@ Parameters:
 
 ## Tiny test workflows
 
-Load the credential-free workflows in [`examples/workflows`](examples/workflows) to test Hugging Face downloads, CivitAI downloads, and the Auto Model Finder with files under 1 MB. See [`examples/workflows/README.md`](examples/workflows/README.md) for usage and cleanup instructions.
+Load the credential-free workflows in [`examples/workflows`](examples/workflows) to test Hugging Face downloads, CivitAI downloads, the Auto Model Finder, and a complete checkpoint-to-image flow. See [`examples/workflows/README.md`](examples/workflows/README.md) for download sizes, usage, and cleanup instructions.
 
 ## Auto Model Finder (Experimental)
 
