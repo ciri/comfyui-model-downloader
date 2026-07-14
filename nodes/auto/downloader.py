@@ -109,7 +109,12 @@ class AutoModelDownloader(BaseModelDownloader):
         print(f"[process] Returning model info: repo_id={repo_id}, filename={selected_model['filename']}, local_path={selected_model['local_path']}")
         return (repo_id, selected_model['filename'], selected_model['local_path'])
     
-    def _get_workflow_hash(self, prompt):
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")
+
+    @staticmethod
+    def _get_workflow_hash(prompt):
         # Convert prompt to dict if it's a string
         if isinstance(prompt, str):
             prompt = json.loads(prompt)

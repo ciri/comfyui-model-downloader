@@ -1,5 +1,6 @@
 import asyncio
 import importlib
+import math
 import unittest
 from unittest.mock import Mock, patch
 
@@ -169,6 +170,9 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
         result = downloader.process("second.bin", prompt, "node-1")
 
         self.assertEqual(("owner/second", "second.bin", "clip_models"), result)
+
+    def test_model_finder_is_not_execution_cached(self):
+        self.assertTrue(math.isnan(self.module.AutoModelDownloader.IS_CHANGED()))
 
     def test_workflow_scanner_is_synchronous(self):
         scanner = importlib.import_module(
