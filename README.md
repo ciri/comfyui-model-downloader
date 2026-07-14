@@ -13,11 +13,6 @@
     <img src="https://img.shields.io/badge/Version-0.3.0-informational" alt="Version 0.3.0">
 </div>
 
-<div align="center">
-    <picture>
-        <source media="(prefers-color-scheme: light)" srcset="https://github.com/ciri/comfyui-model-downloader/blob/main/assets/logo.svg?raw=true">
-    </picture>
-</div>
 
 
 ## Introduction
