@@ -54,6 +54,39 @@ class ModelSearchTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(1, request.call_count)
 
+    def test_sd_checkpoint_filename_uses_stable_diffusion_search(self):
+        no_match = Mock(status_code=200)
+        no_match.json.return_value = []
+        matching_response = Mock(status_code=200)
+        matching_response.json.return_value = [
+            {
+                "modelId": "owner/stable-diffusion-tiny",
+                "siblings": [{"rfilename": "sd-v1-5-tiny.safetensors"}],
+            }
+        ]
+
+        with patch.object(
+            self.module.requests,
+            "get",
+            side_effect=[no_match, matching_response],
+        ) as request:
+            result = self.module.search_for_model("sd-v1-5-tiny.safetensors")
+
+        self.assertEqual(
+            {
+                "repo_id": "owner/stable-diffusion-tiny",
+                "filename": "sd-v1-5-tiny.safetensors",
+            },
+            result,
+        )
+        self.assertEqual(
+            [
+                {"full": "true", "search": "sd_5"},
+                {"full": "true", "search": "stable-diffusion-tiny"},
+            ],
+            [call.kwargs["params"] for call in request.call_args_list],
+        )
+
 
 class AutoDownloaderEventLoopTests(unittest.TestCase):
     def setUp(self):

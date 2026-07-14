@@ -19,7 +19,7 @@
         {"name": "VAE", "type": "VAE", "links": null}
       ],
       "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
-      "widgets_values": ["model.safetensors"]
+      "widgets_values": ["sd-v1-5-tiny.safetensors"]
     },
     {
       "id": 2,
@@ -84,21 +84,22 @@
     },
     {
       "id": 6,
-      "type": "CLIPLoader",
+      "type": "CheckpointLoaderSimple",
       "pos": [80, 410],
-      "size": [300, 90],
+      "size": [300, 60],
       "flags": {},
       "order": 5,
       "mode": 0,
       "inputs": [
-        {"name": "clip_name", "type": "COMBO", "widget": {"name": "clip_name"}, "link": null},
-        {"name": "type", "type": "COMBO", "widget": {"name": "type"}, "link": null}
+        {"name": "ckpt_name", "type": "COMBO", "widget": {"name": "ckpt_name"}, "link": null}
       ],
       "outputs": [
-        {"name": "CLIP", "type": "CLIP", "links": null}
+        {"name": "MODEL", "type": "MODEL", "links": null},
+        {"name": "CLIP", "type": "CLIP", "links": null},
+        {"name": "VAE", "type": "VAE", "links": null}
       ],
-      "properties": {"Node name for S&R": "CLIPLoader"},
-      "widgets_values": ["pytorch_model.bin", "stable_diffusion"]
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["sd-v1-5-inpainting-tiny.safetensors"]
     }
   ],
   "links": [

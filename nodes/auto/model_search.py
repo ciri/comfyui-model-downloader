@@ -39,6 +39,10 @@ def search_for_model(filename):
     if components["core_name"]:
         if components["version"]:
             search_queries.append(f"{components['core_name']}_{components['version']}")
+        if components["core_name"].lower() == "sd":
+            alpha_tags = [tag for tag in components["tags"] if tag.isalpha()]
+            if alpha_tags:
+                search_queries.append(f"stable-diffusion-{alpha_tags[-1]}")
         search_queries.append(components["core_name"])
     combined_query = "_".join(
         part for part in [components["core_name"], *components["tags"]] if part

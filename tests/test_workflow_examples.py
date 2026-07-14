@@ -28,13 +28,13 @@ class WorkflowExampleTests(unittest.TestCase):
         nodes = {node["id"]: node for node in workflow["nodes"]}
 
         self.assertEqual("CheckpointLoaderSimple", nodes[1]["type"])
-        self.assertEqual(["model.safetensors"], nodes[1]["widgets_values"])
+        self.assertEqual(["sd-v1-5-tiny.safetensors"], nodes[1]["widgets_values"])
         self.assertEqual("Auto Model Downloader", nodes[2]["type"])
         self.assertEqual("PreviewAny", nodes[3]["type"])
         self.assertEqual("PreviewAny", nodes[4]["type"])
         self.assertEqual("PreviewAny", nodes[5]["type"])
-        self.assertEqual("CLIPLoader", nodes[6]["type"])
-        self.assertEqual(["pytorch_model.bin", "stable_diffusion"], nodes[6]["widgets_values"])
+        self.assertEqual("CheckpointLoaderSimple", nodes[6]["type"])
+        self.assertEqual(["sd-v1-5-inpainting-tiny.safetensors"], nodes[6]["widgets_values"])
         self.assertEqual([1], nodes[2]["outputs"][0]["links"])
         self.assertEqual([2], nodes[2]["outputs"][1]["links"])
         self.assertEqual([3], nodes[2]["outputs"][2]["links"])
