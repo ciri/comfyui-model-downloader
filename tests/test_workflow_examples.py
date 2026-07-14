@@ -33,6 +33,11 @@ class WorkflowExampleTests(unittest.TestCase):
         self.assertEqual("PreviewAny", nodes[3]["type"])
         self.assertEqual("PreviewAny", nodes[4]["type"])
         self.assertEqual("PreviewAny", nodes[5]["type"])
+        self.assertEqual("CLIPLoader", nodes[6]["type"])
+        self.assertEqual(["pytorch_model.bin", "stable_diffusion"], nodes[6]["widgets_values"])
+        self.assertEqual([1], nodes[2]["outputs"][0]["links"])
+        self.assertEqual([2], nodes[2]["outputs"][1]["links"])
+        self.assertEqual([3], nodes[2]["outputs"][2]["links"])
         self.assertEqual(
             [
                 [1, 2, 0, 3, 0, "STRING"],

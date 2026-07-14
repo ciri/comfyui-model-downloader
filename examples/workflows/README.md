@@ -14,9 +14,9 @@ These workflows are intentionally public and credential-free. Load one by draggi
 
 ## Run the auto-model-finder flow from scratch
 
-Before loading `auto-model-finder-scan.json`, delete `model.safetensors` from the selected `checkpoints` directory. The unconnected **Load Checkpoint** node is deliberate: it gives the model finder a missing filename to scan without attempting to load it. Queue the workflow, then inspect the three previews: repository ID, filename, and target model path.
+Before loading `auto-model-finder-scan.json`, delete `model.safetensors` from `checkpoints` and `pytorch_model.bin` from `clip_models`. The two unconnected loader nodes are deliberate: they give the model finder two missing filenames to scan without attempting to load either. Queue the workflow, then inspect the three previews: repository ID, filename, and target model path.
 
-The finder no longer has a free-text model-name input. It scans all model-like filenames in the workflow that are absent from ComfyUI's configured model paths, searches Hugging Face for each filename, and populates **select_model** with every resolved filename. Select one result to update the three outputs. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests.
+The finder no longer has a free-text model-name input. It scans all model-like filenames in the workflow that are absent from ComfyUI's configured model paths, searches Hugging Face for each filename, and populates **select_model** with every resolved filename. Select either result to update the three outputs. The fixture deliberately does not connect its result to a downloader; inspect the selected repository before deciding whether to download it. The download workflows above remain the deterministic, small end-to-end tests.
 
 ## Loading a downloaded checkpoint
 

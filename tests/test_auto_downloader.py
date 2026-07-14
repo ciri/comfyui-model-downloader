@@ -97,6 +97,46 @@ class AutoDownloaderEventLoopTests(unittest.TestCase):
             result,
         )
 
+    def test_process_selects_a_second_discovered_model(self):
+        downloader = self.module.AutoModelDownloader()
+        prompt = {
+            "1": {
+                "class_type": "CheckpointLoaderSimple",
+                "inputs": {"ckpt_name": "first.safetensors"},
+            },
+            "2": {
+                "class_type": "CLIPLoader",
+                "inputs": {"clip_name": "second.bin"},
+            },
+        }
+        missing_models = [
+            {
+                "filename": "first.safetensors",
+                "repo_id": None,
+                "local_path": "checkpoints",
+            },
+            {
+                "filename": "second.bin",
+                "repo_id": None,
+                "local_path": "clip_models",
+            },
+        ]
+
+        with patch.object(self.module, "scan_workflow", return_value=missing_models), \
+                patch.object(
+                    self.module,
+                    "search_for_model",
+                    side_effect=[
+                        {"repo_id": "owner/first"},
+                        {"repo_id": "owner/second"},
+                    ],
+                ):
+            downloader.process("Scan First", prompt, "node-1")
+
+        result = downloader.process("second.bin", prompt, "node-1")
+
+        self.assertEqual(("owner/second", "second.bin", "clip_models"), result)
+
     def test_workflow_scanner_is_synchronous(self):
         scanner = importlib.import_module(
             f"{PACKAGE_NAME}.nodes.auto.workflow_scanner"

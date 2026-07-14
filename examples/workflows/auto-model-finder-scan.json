@@ -1,5 +1,5 @@
 {
-  "last_node_id": 5,
+  "last_node_id": 6,
   "last_link_id": 3,
   "nodes": [
     {
@@ -34,8 +34,8 @@
       ],
       "outputs": [
         {"name": "repo_id", "type": "STRING", "links": [1]},
-        {"name": "filename", "type": "STRING", "links": null},
-        {"name": "local_path", "type": "STRING", "links": null}
+        {"name": "filename", "type": "STRING", "links": [2]},
+        {"name": "local_path", "type": "STRING", "links": [3]}
       ],
       "properties": {"Node name for S&R": "Auto Model Downloader"},
       "widgets_values": ["Scan First"]
@@ -81,6 +81,24 @@
       ],
       "outputs": [],
       "properties": {"Node name for S&R": "PreviewAny"}
+    },
+    {
+      "id": 6,
+      "type": "CLIPLoader",
+      "pos": [80, 410],
+      "size": [300, 90],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip_name", "type": "COMBO", "widget": {"name": "clip_name"}, "link": null},
+        {"name": "type", "type": "COMBO", "widget": {"name": "type"}, "link": null}
+      ],
+      "outputs": [
+        {"name": "CLIP", "type": "CLIP", "links": null}
+      ],
+      "properties": {"Node name for S&R": "CLIPLoader"},
+      "widgets_values": ["pytorch_model.bin", "stable_diffusion"]
     }
   ],
   "links": [
